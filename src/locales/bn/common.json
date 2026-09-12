@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "projects": "প্রকল্প",
+    "properties": "সম্পত্তি",
+    "about": "আমাদের সম্পর্কে",
+    "insights": "ইনসাইট",
+    "contact": "যোগাযোগ",
+    "login": "গ্রাহক লগইন"
+  },
+  "cta": {
+    "exploreProjects": "প্রকল্প দেখুন",
+    "scheduleVisit": "ভিজিট নির্ধারণ করুন",
+    "contactSales": "বিক্রয় বিভাগে যোগাযোগ করুন",
+    "submitProperty": "সম্পত্তি জমা দিন",
+    "partnerWithUs": "আমাদের সাথে অংশীদার হন"
+  },
+  "footer": {
+    "explore": "এক্সপ্লোর",
+    "services": "সেবাসমূহ",
+    "support": "সহায়তা",
+    "privacy": "গোপনীয়তা নীতি",
+    "terms": "শর্তাবলী"
+  }
+}

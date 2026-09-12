@@ -1,0 +1,56 @@
+"use client";
+
+import { Bell, LogOut, Menu } from "lucide-react";
+import { IconButton } from "@/components/ui/IconButton";
+import { GlobalSearch } from "@/components/admin/search/GlobalSearch";
+import { ROLE_LABELS } from "@/config/roles";
+import { logoutAction } from "@/lib/auth/actions";
+import type { User } from "@/types/user";
+
+export interface AdminHeaderProps {
+  user: User;
+  onOpenMobileNav: () => void;
+}
+
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+/**
+ * Top bar, mounted once inside `AdminShell`. Prompt 10 — the global search
+ * input is now the real, universal cross-domain search (`GlobalSearch`),
+ * replacing the earlier disabled placeholder. The notification bell still
+ * has no badge/dropdown — that's still genuinely unbuilt, not this step's
+ * scope.
+ */
+export function AdminHeader({ user, onOpenMobileNav }: AdminHeaderProps) {
+  return (
+    <header className="border-border bg-bg/95 sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b px-4 backdrop-blur-sm sm:px-6">
+      <IconButton icon={Menu} label="Open menu" onClick={onOpenMobileNav} className="lg:hidden" />
+
+      <GlobalSearch user={user} />
+
+      <div className="ml-auto flex items-center gap-2">
+        <IconButton icon={Bell} label="Notifications" />
+        <div className="border-border ml-1 flex items-center gap-2.5 border-l pl-3">
+          <span className="bg-accent text-accent-foreground text-label flex size-8 items-center justify-center rounded-full">
+            {initials(user.name)}
+          </span>
+          <span className="hidden flex-col leading-tight md:flex">
+            <span className="text-body-sm text-fg">{user.name}</span>
+            <span className="text-caption text-fg-subtle">{ROLE_LABELS[user.role]}</span>
+          </span>
+          <form action={logoutAction}>
+            <IconButton icon={LogOut} label="Sign out" type="submit" />
+          </form>
+        </div>
+      </div>
+    </header>
+  );
+}

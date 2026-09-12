@@ -1,0 +1,5 @@
+Joint Venture / Investment page — `/landowners` (also the target of the "Investment" nav item, deep-linked to `#investment`). Content: `src/content/partnership.ts`, evergreen company copy (like `content/about.ts`), not project-instance data.
+
+**Step 12**: `PartnershipHero`, `PartnershipStatement`, `TwoPaths` (a genuine light/dark split — not two cards), `JVProcess` (`#process`, same connected-line timeline language as Construction), `WhatWeBring`, `InvestmentSection` (`#investment`, deliberately careful language — no guaranteed-return claims), `ProjectOpportunities` (reuses `ProjectCard`, filtered to active-development projects only), `TrustTransparency`, `DocumentsNeeded`, `PartnershipEnquiry` (`#enquiry` — a real client-side form: validates and shows a local confirmation state, but nothing is transmitted anywhere yet since no CRM/backend exists).
+
+New reusable primitives added to `ui/`: `Textarea`, `Select` (labelled form select — distinct from `ProjectFilters`' borderless filter-bar select).

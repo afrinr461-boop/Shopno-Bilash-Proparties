@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "projects": "Projects",
+    "properties": "Properties",
+    "about": "About",
+    "insights": "Insights",
+    "contact": "Contact",
+    "login": "Customer Login"
+  },
+  "cta": {
+    "exploreProjects": "Explore Projects",
+    "scheduleVisit": "Schedule a Visit",
+    "contactSales": "Contact Sales",
+    "submitProperty": "Submit Property",
+    "partnerWithUs": "Partner With Us"
+  },
+  "footer": {
+    "explore": "Explore",
+    "services": "Services",
+    "support": "Support",
+    "privacy": "Privacy Policy",
+    "terms": "Terms"
+  }
+}

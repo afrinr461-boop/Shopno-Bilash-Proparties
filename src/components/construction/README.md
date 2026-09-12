@@ -1,0 +1,7 @@
+Construction Progress experience — one page per project, at `/projects/[slug]/construction`. Data model: `src/content/construction.ts` (`ConstructionProgress`), linked by `projectSlug` like `units.ts`.
+
+**Step 11**: `ConstructionHeader` (back-to-project link + intro), `ConstructionOverallProgress` (large % + a thin architectural progress line, not a gauge — omits itself with no `overallProgress`), `ConstructionTimeline` (editorial vertical line + dots, only real milestones, carries the "last updated" transparency note), `ConstructionJournal` (the large alternating-photo progress journal — the strongest section per the brief), `ConstructionBeforeAfter` (native `<input type="range">` drag-to-compare slider — keyboard-accessible for free, omits itself with no real before/current pairs), `ConstructionCurrentAndUpcoming` (latest update + upcoming milestones, two halves), `ConstructionClosingCTA` (View Project / Explore Units when the project has any / Contact).
+
+The Project Details page (`ProjectStatusAndAvailability`) links here via a "View Construction Progress" CTA, shown only when `content/construction.ts` has an entry for that project — verified absent on projects without one.
+
+`constructionProgress` currently holds one ⚠ demo entry (Meridian Residences) — populated at the user's request so the site is browsable for visual QA; not a real construction record. Any project without an entry 404s honestly rather than showing invented progress.

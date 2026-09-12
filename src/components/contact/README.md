@@ -1,0 +1,5 @@
+Contact experience — `/contact`. Data: `src/content/contact.ts` (hero copy, `contactPaths`, `contactInfo`).
+
+**Step 14**: `ContactHero` (pure-typography light hero — deliberately not another dark cinematic panel, since this is the site's last chapter), `ContactExperience` (client — the "what can we help with" path selector and the enquiry form share one component so picking a path pre-selects the form's enquiry type; handles default/focus/validation/loading/success/error states; `submitEnquiry()` is a placeholder for a future Admin/CRM call, wrapped in a real try/catch even though nothing can fail yet), `ContactInfoSection` (renders nothing — `contactInfo` is intentionally empty; no phone/email/address exists yet and this site will never display invented ones).
+
+**Project/Unit context**: `ProjectEnquiryCTA` and `UnitEnquiryCTA` now link to `/contact?project=...&unit=...&type=...`; the Contact page reads these via `searchParams` and shows a "Project: X / Property: Y" preview above the form, submitted as hidden fields — ready for a future CRM to read where an enquiry came from.

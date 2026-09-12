@@ -1,0 +1,1 @@
+Alerts, empty/error/permission-denied/loading states — the five states every major page must handle (ARCHITECTURE.md §12). Implemented: `EmptyState`, `ErrorState`, `PermissionDeniedState`, `LoadingState`, `Alert`. Toasts are not built yet.

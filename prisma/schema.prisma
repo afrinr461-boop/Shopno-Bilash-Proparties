@@ -1,0 +1,360 @@
+// Real, on-disk persistence for every domain that used to live only in
+// server memory (`InMemoryRepository` — see `src/lib/repository.ts`).
+//
+// Every model below (bar `Credential`) has exactly the same shape: an `id`
+// column to query/update/delete by, and a `data` JSON column holding the
+// *entire* entity exactly as the app's own `src/types/*` TypeScript types
+// already define it. This is deliberate, not a shortcut:
+//
+//   - The `Repository<T>` interface (`src/lib/repository.ts`) only ever
+//     does `list()` / `findById()` / `create()` / `update()` / `remove()` —
+//     no filtering, no joins, no query language. Every "join" in this app
+//     already happens in JS, at the page level, after fetching full lists.
+//     A normalized relational schema would add real column types and
+//     foreign keys that nothing in the app would ever actually query by —
+//     pure risk (an app type and a DB column silently drifting apart)
+//     for zero benefit today.
+//   - Storing the whole entity as JSON means `toEntity`/`toRow` in
+//     `src/lib/prismaRepository.ts` are the same two lines for all 29
+//     models — one implementation to get right, not 29 field-by-field
+//     mappings (Money objects, string[] arrays, optional fields, etc.)
+//     each a fresh chance to introduce a bug.
+//   - Upgrading any one domain to real relational columns later (once the
+//     app actually needs to filter/sort at the database level) is a
+//     schema change to that one model plus a matching `toEntity`/`toRow`
+//     pair — the `Repository<T>` interface, and every caller, stays
+//     exactly the same, per this project's established swap-the-
+//     implementation architecture.
+//
+// SQLite today (`DATABASE_URL` in `.env`) so this runs with zero external
+// infrastructure. Moving to Postgres later for production is a one-line
+// `provider` change plus a connection string — Prisma's whole reason for
+// existing — nothing else in this schema or the app changes.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// The one exception to the id+data pattern: password hashes must never
+// travel through the same read path as a `User` record (see
+// `src/lib/auth/credentials.ts`'s own comment on this separation), so they
+// get their own tiny table instead of living in `User.data`.
+model Credential {
+  userId       String @id
+  email        String @unique
+  passwordHash String
+}
+
+// Chapter 3 — the owner/shareholder/landowner portal's phone+PIN login,
+// same separation-of-concerns reasoning as `Credential` above (a PIN hash
+// must never travel through `User`'s normal read path). A row here only
+// ever exists once an owner has actually activated their portal access —
+// its absence for a given `User` IS the "Pending Activation" state, not a
+// separate stored status.
+model OwnerCredential {
+  userId    String   @id
+  phone     String   @unique
+  pinHash   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id   String @id
+  data Json
+}
+
+model AuditLog {
+  id   String @id
+  data Json
+}
+
+model Project {
+  id   String @id
+  data Json
+}
+
+model ProjectContent {
+  id   String @id
+  data Json
+}
+
+model Unit {
+  id   String @id
+  data Json
+}
+
+model Building {
+  id   String @id
+  data Json
+}
+
+model Floor {
+  id   String @id
+  data Json
+}
+
+model Parking {
+  id   String @id
+  data Json
+}
+
+model OwnershipRecord {
+  id   String @id
+  data Json
+}
+
+model UnitContent {
+  id   String @id
+  data Json
+}
+
+model Customer {
+  id   String @id
+  data Json
+}
+
+model ConstructionPhase {
+  id   String @id
+  data Json
+}
+
+model ConstructionTask {
+  id   String @id
+  data Json
+}
+
+model Contractor {
+  id   String @id
+  data Json
+}
+
+model ContractorAssignment {
+  id   String @id
+  data Json
+}
+
+model ContractorPayment {
+  id   String @id
+  data Json
+}
+
+model Milestone {
+  id   String @id
+  data Json
+}
+
+model ScheduleRevision {
+  id   String @id
+  data Json
+}
+
+model ConstructionActivityLog {
+  id   String @id
+  data Json
+}
+
+model Lead {
+  id   String @id
+  data Json
+}
+
+model Document {
+  id   String @id
+  data Json
+}
+
+model CustomerPayment {
+  id   String @id
+  data Json
+}
+
+model ProjectExpense {
+  id   String @id
+  data Json
+}
+
+model ProjectBudget {
+  id   String @id
+  data Json
+}
+
+model Sale {
+  id   String @id
+  data Json
+}
+
+model Installment {
+  id   String @id
+  data Json
+}
+
+model Vendor {
+  id   String @id
+  data Json
+}
+
+model MaterialCategory {
+  id   String @id
+  data Json
+}
+
+model Material {
+  id   String @id
+  data Json
+}
+
+model PurchaseOrder {
+  id   String @id
+  data Json
+}
+
+model Purchase {
+  id   String @id
+  data Json
+}
+
+model PurchaseReceipt {
+  id   String @id
+  data Json
+}
+
+model MaterialThreshold {
+  id   String @id
+  data Json
+}
+
+model Shareholder {
+  id   String @id
+  data Json
+}
+
+model Shareholding {
+  id   String @id
+  data Json
+}
+
+model Landowner {
+  id   String @id
+  data Json
+}
+
+model Agreement {
+  id   String @id
+  data Json
+}
+
+model LandownerAllocation {
+  id   String @id
+  data Json
+}
+
+model Notification {
+  id   String @id
+  data Json
+}
+
+model CompanySettings {
+  id   String @id
+  data Json
+}
+
+model NewsArticle {
+  id   String @id
+  data Json
+}
+
+model GalleryImage {
+  id   String @id
+  data Json
+}
+
+model PageContent {
+  id   String @id
+  data Json
+}
+
+model FounderProfile {
+  id   String @id
+  data Json
+}
+
+model CostAllocation {
+  id   String @id
+  data Json
+}
+
+model OwnerContribution {
+  id   String @id
+  data Json
+}
+
+model ContributionPayment {
+  id   String @id
+  data Json
+}
+
+model UnitAllocation {
+  id   String @id
+  data Json
+}
+
+model GoalInstallment {
+  id   String @id
+  data Json
+}
+
+model OwnerInstallmentObligation {
+  id   String @id
+  data Json
+}
+
+model ContributionAdjustment {
+  id   String @id
+  data Json
+}
+
+model UnitTier {
+  id   String @id
+  data Json
+}
+
+model StockMovement {
+  id   String @id
+  data Json
+}
+
+model CashAccount {
+  id   String @id
+  data Json
+}
+
+model FinancialAdjustment {
+  id   String @id
+  data Json
+}
+
+model Booking {
+  id   String @id
+  data Json
+}
+
+model OwnershipTransfer {
+  id   String @id
+  data Json
+}
+
+model Reminder {
+  id   String @id
+  data Json
+}
+
+model NotificationPreference {
+  id   String @id
+  data Json
+}

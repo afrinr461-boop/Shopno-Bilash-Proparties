@@ -1,0 +1,609 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   SHOPNO BILASH PROPERTIES — DESIGN TOKENS
+   Single source of truth for color, type, space, radius, shadow, container,
+   and motion. Components must consume these tokens (via the Tailwind
+   utilities they generate, or the utility classes below) rather than
+   hardcoding raw values. See DESIGN_SYSTEM.md for full documentation.
+   ========================================================================== */
+
+:root {
+  /* ---- Color primitives (light theme) ---- */
+  --color-bg: #faf8f4; /* primary background — warm ivory */
+  --color-surface: #f1eee6; /* secondary background — light stone */
+  --color-surface-raised: #ffffff; /* cards/panels sitting above surface */
+  --color-fg: #1c1b19; /* primary text — deep charcoal */
+  --color-fg-muted: #6b6660; /* secondary text — muted gray */
+  --color-fg-subtle: #8f897f; /* tertiary text — placeholders, hints */
+
+  --color-border: #e3ddd1; /* default hairline border */
+  --color-border-strong: #cfc7b7; /* emphasized border, input focus rest state */
+
+  --color-accent: #1f3d33; /* deep forest / architectural green — brand */
+  --color-accent-strong: #16281f; /* accent hover/active */
+  --color-accent-soft: #e4ebe6; /* accent-tinted background (badges, selected rows) */
+  --color-accent-foreground: #f7faf8; /* text/icons placed on accent */
+
+  --color-premium: #b9a278; /* muted champagne — sparing use only */
+  --color-premium-soft: #f2ede1;
+
+  --color-success: #2f6b4f;
+  --color-success-soft: #e6f0ea;
+  --color-warning: #a8710f;
+  --color-warning-soft: #f7ecd8;
+  --color-error: #a83c2e;
+  --color-error-soft: #f6e6e2;
+  --color-info: #3b6e92;
+  --color-info-soft: #e6eef3;
+
+  --color-disabled-bg: #e7e3da;
+  --color-disabled-fg: #a39e95;
+
+  --color-overlay: rgb(28 27 25 / 60%);
+
+  /* Shadows — soft, warm-tinted, never pure black */
+  --shadow-color: 28 27 25;
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.06);
+  --shadow-md: 0 4px 12px rgb(var(--shadow-color) / 0.08);
+  --shadow-lg: 0 12px 32px rgb(var(--shadow-color) / 0.1);
+  --shadow-float: 0 20px 48px rgb(var(--shadow-color) / 0.14);
+
+  /* Radius — restrained geometry */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Transitions */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* Container / grid */
+  --container-content: 80rem; /* 1280px max content width */
+  --container-narrow: 48rem; /* 768px — long-form / article content */
+  --container-wide: 90rem; /* 1440px — hard ceiling for full-bleed sections */
+  --gutter: 16px; /* mobile side padding */
+
+  /* Section rhythm — vertical padding for <Section>, independent of --gutter
+     (horizontal). Editorial sections read as "premium" partly because the
+     vertical whitespace between them is generous and consistent. */
+  --space-section-sm: 64px;
+  --space-section: 96px;
+  --space-section-lg: 160px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --space-section-sm: 80px;
+    --space-section: 128px;
+    --space-section-lg: 200px;
+  }
+}
+
+/* ---- Dark theme ----
+   Applies automatically via prefers-color-scheme, or manually via
+   data-theme="dark" / data-theme="light" on <html> (for a future
+   user-facing theme toggle). Kept professional — never pure black. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #15140f;
+    --color-surface: #1c1a15;
+    --color-surface-raised: #211f19;
+    --color-fg: #f3f1ea;
+    --color-fg-muted: #a8a29a;
+    --color-fg-subtle: #7d786f;
+
+    --color-border: #322f27;
+    --color-border-strong: #453f34;
+
+    --color-accent: #5ea083;
+    --color-accent-strong: #7fbb9f;
+    --color-accent-soft: #1e2e27;
+    --color-accent-foreground: #0e1512;
+
+    --color-premium: #d4be8e;
+    --color-premium-soft: #2a2519;
+
+    --color-success: #4e9d77;
+    --color-success-soft: #1c2b23;
+    --color-warning: #d6a13c;
+    --color-warning-soft: #2e2717;
+    --color-error: #d9695a;
+    --color-error-soft: #2f1f1c;
+    --color-info: #6fa8cc;
+    --color-info-soft: #1c2731;
+
+    --color-disabled-bg: #2a2822;
+    --color-disabled-fg: #6b665d;
+
+    --color-overlay: rgb(0 0 0 / 70%);
+
+    --shadow-color: 0 0 0;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #15140f;
+  --color-surface: #1c1a15;
+  --color-surface-raised: #211f19;
+  --color-fg: #f3f1ea;
+  --color-fg-muted: #a8a29a;
+  --color-fg-subtle: #7d786f;
+
+  --color-border: #322f27;
+  --color-border-strong: #453f34;
+
+  --color-accent: #5ea083;
+  --color-accent-strong: #7fbb9f;
+  --color-accent-soft: #1e2e27;
+  --color-accent-foreground: #0e1512;
+
+  --color-premium: #d4be8e;
+  --color-premium-soft: #2a2519;
+
+  --color-success: #4e9d77;
+  --color-success-soft: #1c2b23;
+  --color-warning: #d6a13c;
+  --color-warning-soft: #2e2717;
+  --color-error: #d9695a;
+  --color-error-soft: #2f1f1c;
+  --color-info: #6fa8cc;
+  --color-info-soft: #1c2731;
+
+  --color-disabled-bg: #2a2822;
+  --color-disabled-fg: #6b665d;
+
+  --color-overlay: rgb(0 0 0 / 70%);
+
+  --shadow-color: 0 0 0;
+}
+
+/* ---- Map tokens into Tailwind's theme (Tailwind v4 CSS-first config) ---- */
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-fg: var(--color-fg);
+  --color-fg-muted: var(--color-fg-muted);
+  --color-fg-subtle: var(--color-fg-subtle);
+
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-accent-foreground: var(--color-accent-foreground);
+
+  --color-premium: var(--color-premium);
+  --color-premium-soft: var(--color-premium-soft);
+
+  --color-success: var(--color-success);
+  --color-success-soft: var(--color-success-soft);
+  --color-warning: var(--color-warning);
+  --color-warning-soft: var(--color-warning-soft);
+  --color-error: var(--color-error);
+  --color-error-soft: var(--color-error-soft);
+  --color-info: var(--color-info);
+  --color-info-soft: var(--color-info-soft);
+
+  --color-disabled-bg: var(--color-disabled-bg);
+  --color-disabled-fg: var(--color-disabled-fg);
+  --color-overlay: var(--color-overlay);
+
+  --font-sans: var(--font-inter), var(--font-noto-sans-bengali), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-noto-sans-bengali),
+    ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-float: var(--shadow-float);
+
+  --container-content: var(--container-content);
+  --container-narrow: var(--container-narrow);
+  --container-wide: var(--container-wide);
+}
+
+/* ==========================================================================
+   Typography tokens — one class per type-scale step. Font family is set
+   explicitly so English/Bangla mixed copy always falls back correctly.
+   ========================================================================== */
+@layer utilities {
+  .text-display-xl {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  .text-display-l {
+    font-family: var(--font-display);
+    font-size: clamp(2.125rem, 1.75rem + 1.6vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+  }
+  .text-display-m {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.55rem + 0.9vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  .text-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.625rem, 1.5rem + 0.5vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  .text-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 1.3rem + 0.3vw, 1.75rem);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+  }
+  .text-h3 {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .text-h4 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+  .text-body-lg {
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .text-body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .text-body-sm {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .text-caption {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    font-weight: 500;
+  }
+  .text-label {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+  }
+  .text-button {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    font-weight: 600;
+  }
+  .text-nav {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .text-numeric {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.4;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .text-stat-lg {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 1.8rem + 1.8vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .text-stat-xl {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 2.2rem + 3.2vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Dense admin dashboards (many KPI cards per screen) need a much smaller,
+     fixed stat size than the public site's hero counters (`.text-stat-lg`/
+     `-xl`, which scale up to 56-88px for a handful of big marketing
+     numbers) — this is what `KpiCard` uses instead. */
+  .text-stat-admin {
+    font-family: var(--font-display);
+    font-size: 1.625rem;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---- Scroll reveal primitive (used by <Reveal>) ----
+   Plain CSS transition driven by an `is-visible` class toggled via
+   IntersectionObserver — no animation library required. Reduced-motion
+   is handled for free by the global override above (transition collapses
+   to ~0ms), so this needs no separate reduced-motion branch. */
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration-slow) var(--ease-standard),
+      transform var(--duration-slow) var(--ease-standard);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Route-change entrance (used by <PageTransition>) ---- */
+@layer utilities {
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .page-enter {
+    animation: page-enter var(--duration-slow) var(--ease-standard);
+  }
+  /* Same keyframe as .page-enter, but with `both` fill-mode so a staggered
+     `animationDelay` doesn't flash the element at full opacity before its
+     turn — used for the Hero's entrance sequence. */
+  .hero-in {
+    animation: page-enter var(--duration-slow) var(--ease-standard) both;
+  }
+
+  /* Subtle entrance for <EmptyState> — a scale rather than a slide, since
+     empty states appear in place rather than sliding in from a route
+     change. Covered by the global prefers-reduced-motion override above. */
+  @keyframes empty-state-in {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .empty-state-in {
+    animation: empty-state-in var(--duration-slow) var(--ease-standard);
+  }
+
+  /* Editorial mask reveal for the Founder hero portrait — a slow bottom-up
+     clip-path wipe + gentle de-zoom, "both" fill-mode so it can join the
+     text's own `.hero-in` stagger via `animationDelay` without flashing at
+     full size first. Deliberately slower than `.hero-in` (premium should
+     feel unhurried, not snappy). */
+  @keyframes founder-image-reveal {
+    from {
+      clip-path: inset(0 0 100% 0);
+      transform: scale(1.06);
+    }
+    to {
+      clip-path: inset(0 0 0% 0);
+      transform: scale(1);
+    }
+  }
+  .hero-image-in {
+    animation: founder-image-reveal 1.3s var(--ease-standard) both;
+  }
+}
+
+/* ---- Hero scroll cue (a deliberate, low-key exception to "no idle
+   motion" — this is the one place continuous motion is the point). ---- */
+@layer utilities {
+  @keyframes scroll-cue {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    20%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(36px);
+      opacity: 0;
+    }
+  }
+  .scroll-cue-dot {
+    animation: scroll-cue 1.8s var(--ease-standard) infinite;
+  }
+}
+
+/* ---- Line-drawing reveal for diagram-style SVG motifs (blueprint,
+   process diagram) — an alternative to <ArchitecturalMotif>'s skyline so
+   not every page's visual accent is literally the same building. Shapes
+   carry `pathLength="100"` so the dash math is exact regardless of their
+   real geometry; the draw only plays once its <Reveal> ancestor becomes
+   visible, reusing that existing IntersectionObserver rather than a
+   second one. ---- */
+@layer utilities {
+  .draw-line {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  .reveal.is-visible .draw-line {
+    animation: draw-line var(--duration-slow) var(--ease-standard) forwards;
+    animation-duration: 1.4s;
+  }
+  @keyframes draw-line {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .draw-fade {
+    opacity: 0;
+  }
+  .reveal.is-visible .draw-fade {
+    animation: draw-fade-in 0.6s var(--ease-standard) forwards;
+  }
+  @keyframes draw-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* ---- Branded loading indicator (used by loading.tsx) — an indeterminate
+   sliding bar, not a spinner. Reduced-motion collapses this to a static
+   bar via the global override already in globals.css. ---- */
+@layer utilities {
+  @keyframes loading-slide {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(250%);
+    }
+  }
+  .loading-bar {
+    animation: loading-slide 1.1s var(--ease-standard) infinite;
+  }
+}
+
+/* ---- Owner Portal page loader (used by <PortalPageLoader>) — a soft
+   breathing glow + brand mark + thin progress line, ported from an
+   earlier project's own site-loader for the same "moving between pages"
+   feel. Reduced-motion is handled by the component itself (it never
+   activates at all, matching the ported original's behavior) rather than
+   here, so no separate media-query branch is needed for these keyframes. ---- */
+@layer utilities {
+  @keyframes portal-loader-breathe {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.08);
+    }
+  }
+  .portal-loader-glow {
+    animation: portal-loader-breathe 2.2s ease-in-out infinite;
+  }
+
+  @keyframes portal-loader-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+  .portal-loader-mark {
+    opacity: 0;
+    animation: portal-loader-fade-in 0.7s ease forwards 0.1s;
+  }
+}
+
+/* ---- Thin scrollbar (used inside contained scroll areas like the search
+   overlay's results list) — the browser's default scrollbar track/thumb
+   reads as a stray UI chrome element inside a designed panel; this keeps
+   a scrollbar functionally present but visually recedes it. ---- */
+@layer utilities {
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-strong);
+    border-radius: 9999px;
+  }
+
+  /* Fully hidden scrollbar for swipe/snap tracks (the owner portal's
+     property gallery, thumbnail strip) — still scrollable, just no
+     visible chrome, since the dot/thumbnail indicators are the real
+     navigation affordance. */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

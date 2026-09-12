@@ -1,0 +1,50 @@
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/Button";
+import { ArchitecturalMotif } from "@/components/ui/ArchitecturalMotif";
+import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
+import { Section } from "@/components/ui/Section";
+import { cn } from "@/lib/utils";
+
+/**
+ * Shown only while no units exist at all — same asymmetric text + skyline
+ * composition as <ProjectsEmptyState>, so the two catalog pages share one
+ * "nothing published yet" language rather than each inventing its own.
+ */
+export function PropertiesEmptyState() {
+  return (
+    <Section spacing="lg" background="surface">
+      <Container>
+        <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
+          <div>
+            <Reveal as="p" className="text-label text-fg-subtle mb-6 uppercase">
+              Catalog
+            </Reveal>
+            <Reveal delay={80}>
+              <p className="text-display-m max-w-xl text-balance">
+                Our property catalog is being prepared for publication.
+              </p>
+            </Reveal>
+            <Reveal delay={160}>
+              <p className="text-body-lg text-fg-muted mt-6 max-w-md">
+                Check back soon, or get in touch to learn what&rsquo;s currently available.
+              </p>
+            </Reveal>
+            <Reveal delay={240}>
+              <Link
+                href="/contact"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mt-8")}
+              >
+                Get in Touch
+              </Link>
+            </Reveal>
+          </div>
+
+          <Reveal delay={120} className="hidden lg:block">
+            <ArchitecturalMotif className="text-border-strong h-auto w-full" />
+          </Reveal>
+        </div>
+      </Container>
+    </Section>
+  );
+}
