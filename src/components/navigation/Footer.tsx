@@ -6,7 +6,6 @@ import { TrustEmblem } from "@/components/ui/TrustEmblem";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
-import { buttonVariants } from "@/components/ui/Button";
 import { Check } from "lucide-react";
 import { brandBlurb, footerGroups, footerHighlights, legalQuickLinks, socialLinks, statement } from "@/content/footer";
 import { Logo } from "./Logo";
@@ -97,18 +96,6 @@ export function Footer() {
                     </li>
                   ))}
                 </ul>
-                {/* TEMPORARY — requested by the client for their own access
-                    while there's no other admin entry point yet. Remove
-                    this whole block once a proper /login link belongs
-                    somewhere permanent (or is no longer needed here). */}
-                {group.title === "Legal" && (
-                  <Link
-                    href="/login"
-                    className={buttonVariants({ variant: "outline", size: "sm" }) + " mt-4"}
-                  >
-                    Admin
-                  </Link>
-                )}
               </Reveal>
             ))}
           </div>
