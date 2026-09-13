@@ -1,4 +1,5 @@
 import "server-only";
+import { prisma } from "@/lib/db";
 
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
@@ -9,43 +10,49 @@ interface Attempt {
 }
 
 /**
- * In-memory sliding-window limiter, keyed by the submitted email
+ * DB-persisted sliding-window limiter, keyed by the submitted email/phone
  * (lowercased) — not by IP, since a shared office/VPN IP shouldn't lock
  * out every real user behind it.
  *
- * ⚠ Documented limitation (brief §20/§36 — do not pretend this is fully
- * solved): this `Map` lives in one server process's memory. It resets on
- * every deploy/restart and is NOT shared across multiple instances or
- * serverless invocations. It stops accidental rapid retries and casual
- * scripted abuse today; it is not a substitute for a shared store (Redis/
- * Upstash) behind a real load balancer in production.
+ * Previously an in-memory `Map`, which only worked for a single
+ * long-running process — a serverless deploy (Netlify) runs each request
+ * on one of several short-lived function instances with no shared memory,
+ * so an in-memory counter resets constantly and stops limiting anything.
+ * Storing the attempt row in the same database every instance already
+ * shares fixes that, at the cost of one extra query per login attempt.
  */
-const attempts = new Map<string, Attempt>();
+async function readAttempt(key: string): Promise<Attempt | null> {
+  const row = await prisma.rateLimitAttempt.findUnique({ where: { id: key } });
+  if (!row) return null;
+  return row.data as unknown as Attempt;
+}
 
-export function isRateLimited(email: string): boolean {
+export async function isRateLimited(email: string): Promise<boolean> {
   const key = email.toLowerCase();
-  const entry = attempts.get(key);
+  const entry = await readAttempt(key);
   if (!entry) return false;
 
   if (Date.now() - entry.windowStart > WINDOW_MS) {
-    attempts.delete(key);
+    await prisma.rateLimitAttempt.delete({ where: { id: key } }).catch(() => {});
     return false;
   }
   return entry.count >= MAX_ATTEMPTS;
 }
 
-export function recordFailedAttempt(email: string): void {
+export async function recordFailedAttempt(email: string): Promise<void> {
   const key = email.toLowerCase();
-  const entry = attempts.get(key);
+  const entry = await readAttempt(key);
   const now = Date.now();
 
-  if (!entry || now - entry.windowStart > WINDOW_MS) {
-    attempts.set(key, { count: 1, windowStart: now });
-    return;
-  }
-  entry.count += 1;
+  const next: Attempt = !entry || now - entry.windowStart > WINDOW_MS ? { count: 1, windowStart: now } : { count: entry.count + 1, windowStart: entry.windowStart };
+
+  await prisma.rateLimitAttempt.upsert({
+    where: { id: key },
+    create: { id: key, data: next as object },
+    update: { data: next as object },
+  });
 }
 
-export function clearAttempts(email: string): void {
-  attempts.delete(email.toLowerCase());
+export async function clearAttempts(email: string): Promise<void> {
+  await prisma.rateLimitAttempt.delete({ where: { id: email.toLowerCase() } }).catch(() => {});
 }

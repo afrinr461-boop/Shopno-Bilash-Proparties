@@ -51,7 +51,7 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
     return { error: "Invalid email or password." };
   }
 
-  if (isRateLimited(email)) {
+  if (await isRateLimited(email)) {
     return { error: "Too many attempts. Try again in a few minutes." };
   }
 
@@ -59,17 +59,17 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
   const passwordValid = await verifyPassword(password, credentials?.passwordHash ?? (await DUMMY_HASH_PROMISE));
 
   if (!credentials || !passwordValid) {
-    recordFailedAttempt(email);
+    await recordFailedAttempt(email);
     return { error: "Invalid email or password." };
   }
 
   const user = await findUserByEmail(email);
   if (!user || user.status !== "active") {
-    recordFailedAttempt(email);
+    await recordFailedAttempt(email);
     return { error: "Invalid email or password." };
   }
 
-  clearAttempts(email);
+  await clearAttempts(email);
 
   const token = await createSessionToken({ userId: user.id, role: user.role });
   const cookieStore = await cookies();

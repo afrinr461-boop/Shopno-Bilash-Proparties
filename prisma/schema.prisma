@@ -358,3 +358,12 @@ model NotificationPreference {
   id   String @id
   data Json
 }
+
+// Backs `src/lib/auth/rateLimiter.ts` — a DB-persisted login rate limiter
+// (email/phone keyed) so the attempt count survives across the multiple
+// short-lived function instances a serverless deploy (Netlify) actually
+// runs on. An in-memory Map only worked for a single long-running process.
+model RateLimitAttempt {
+  id   String @id
+  data Json
+}

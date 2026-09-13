@@ -47,13 +47,13 @@ export async function identifyOwnerAction(_prevState: OwnerAuthState, formData: 
   // Throttles phone-number enumeration (this step reveals, via its two
   // different responses, whether a given number has a registered portal
   // account) — same limiter/key convention as the PIN step.
-  if (isRateLimited(normalizePhone(phone))) {
+  if (await isRateLimited(normalizePhone(phone))) {
     return { step: "phone", error: "Too many attempts. Please try again in a few minutes." };
   }
 
   const user = await findUserByPhone(phone, PORTAL_ROLES);
   if (!user) {
-    recordFailedAttempt(normalizePhone(phone));
+    await recordFailedAttempt(normalizePhone(phone));
     return { step: "phone", error: NOT_FOUND_MESSAGE };
   }
   if (user.status === "suspended" || user.status === "disabled") {
@@ -124,21 +124,21 @@ export async function changeOwnerPinAction(_prevState: ChangeOwnerPinState, form
   const user = await getCurrentUser();
   if (!user || !user.phone) return { error: "Your session has expired. Please sign in again." };
 
-  if (isRateLimited(user.phone)) {
+  if (await isRateLimited(user.phone)) {
     return { error: "Too many attempts. Please try again in a few minutes." };
   }
 
   const credentials = await findOwnerCredentialsByPhone(user.phone);
   const pinValid = await verifyPassword(currentPin, credentials?.pinHash ?? (await DUMMY_PIN_HASH_PROMISE));
   if (!credentials || !pinValid) {
-    recordFailedAttempt(user.phone);
+    await recordFailedAttempt(user.phone);
     return { error: "Current PIN is incorrect." };
   }
 
   if (!isValidPin(newPin)) return { error: "New PIN must be exactly 4 digits." };
   if (newPin !== confirmPin) return { error: "New PINs don't match." };
 
-  clearAttempts(user.phone);
+  await clearAttempts(user.phone);
   await updateOwnerCredentialPin(user.id, await hashPassword(newPin));
 
   await recordAuditEvent({
@@ -164,7 +164,7 @@ export async function ownerPinLoginAction(_prevState: OwnerAuthState, formData: 
   // spacing/punctuation, making the 4-digit PIN brute-forceable.
   const rateLimitKey = normalizePhone(phone);
 
-  if (isRateLimited(rateLimitKey)) {
+  if (await isRateLimited(rateLimitKey)) {
     return { step: "pin", phone, error: "Too many attempts. Please try again in a few minutes." };
   }
 
@@ -172,7 +172,7 @@ export async function ownerPinLoginAction(_prevState: OwnerAuthState, formData: 
   const pinValid = await verifyPassword(pin, credentials?.pinHash ?? (await DUMMY_PIN_HASH_PROMISE));
 
   if (!credentials || !pinValid) {
-    recordFailedAttempt(rateLimitKey);
+    await recordFailedAttempt(rateLimitKey);
     if (user) {
       await recordAuditEvent({
         actorUserId: user.id,
@@ -186,11 +186,11 @@ export async function ownerPinLoginAction(_prevState: OwnerAuthState, formData: 
   }
 
   if (!user || user.status !== "active") {
-    recordFailedAttempt(rateLimitKey);
+    await recordFailedAttempt(rateLimitKey);
     return { step: "phone", error: user ? INACTIVE_MESSAGE : NOT_FOUND_MESSAGE };
   }
 
-  clearAttempts(rateLimitKey);
+  await clearAttempts(rateLimitKey);
 
   const token = await createSessionToken({ userId: user.id, role: user.role });
   const cookieStore = await cookies();
