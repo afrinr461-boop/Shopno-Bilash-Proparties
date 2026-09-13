@@ -1,16 +1,18 @@
 import { ArchitecturalMotif } from "@/components/ui/ArchitecturalMotif";
 import { Container } from "@/components/ui/Container";
-import { Divider } from "@/components/ui/Divider";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
-import { milestones, storyFallback } from "@/content/about";
+import { storyFallback } from "@/content/about";
+import { MilestoneEntry } from "./MilestoneEntry";
+import type { CompanyMilestone } from "@/types/companyMilestone";
 
 /**
- * Two states, same as <FeaturedDevelopment> on the homepage: a real
- * editorial timeline once `milestones` has entries, or an honest narrative
- * paragraph instead of inventing history while it's empty.
+ * Two states, same as <FeaturedDevelopment> on the homepage: a real,
+ * admin-authored timeline (Admin → Content → Our Story) once entries exist,
+ * or an honest narrative paragraph instead of inventing history while
+ * it's empty.
  */
-export function OurStory() {
+export function OurStory({ milestones }: { milestones: CompanyMilestone[] }) {
   return (
     <Section spacing="lg">
       <Container>
@@ -19,19 +21,14 @@ export function OurStory() {
         </Reveal>
 
         {milestones.length > 0 ? (
-          <div>
-            <Divider />
+          <div className="max-w-2xl">
             {milestones.map((milestone, i) => (
-              <Reveal key={milestone.year} delay={i * 60}>
-                <div className="flex flex-col gap-2 py-8 sm:flex-row sm:items-baseline sm:gap-8">
-                  <span className="text-label text-accent w-20 shrink-0 tabular-nums">
-                    {milestone.year}
-                  </span>
-                  <h3 className="text-h4 w-full shrink-0 sm:w-56">{milestone.title}</h3>
-                  <p className="text-body text-fg-muted max-w-lg">{milestone.description}</p>
-                </div>
-                <Divider />
-              </Reveal>
+              <MilestoneEntry
+                key={milestone.id}
+                milestone={milestone}
+                delay={i * 80}
+                isLast={i === milestones.length - 1}
+              />
             ))}
           </div>
         ) : (

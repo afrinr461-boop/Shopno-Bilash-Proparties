@@ -3,7 +3,6 @@
  * content/home.ts — a future Admin Panel should be able to own this
  * content without any About component needing to change.
  */
-import type { Statistic } from "./home";
 
 export const intro = {
   eyebrow: "About Shopno Bilash",
@@ -12,41 +11,7 @@ export const intro = {
     "We're a real estate developer — but the work is really about land, trust, and the people who end up living with our decisions.",
 };
 
-export interface Milestone {
-  year: string;
-  title: string;
-  description: string;
-}
-
-/**
- * ⚠ DEMO DATA — populated at the user's request so the site is browsable
- * for visual QA (2026-09-06). Not real company history. Empty this array
- * again (or replace with real milestones) before launch — see the
- * matching note in content/projects.ts.
- */
-export const milestones: Milestone[] = [
-  {
-    year: "2016",
-    title: "Company Founded",
-    description: "Started with a single residential project and a small in-house team.",
-  },
-  {
-    year: "2019",
-    title: "First Handover",
-    description: "Delivered our first completed development to its residents.",
-  },
-  {
-    year: "2022",
-    title: "First Landowner Partnership",
-    description: "Structured our first joint-venture development on landowner-held land.",
-  },
-  {
-    year: "2026",
-    title: "Ongoing Growth",
-    description: "Multiple developments now in planning, construction and delivery at once.",
-  },
-];
-
+/** Shown only while Admin → Content → Our Story has zero entries — see `companyMilestoneRepository`, the real (DB-backed, admin-editable) source for the timeline itself. */
 export const storyFallback =
   "Every project we take on shapes how we approach the next one. We're still early in that story, and we'd rather grow it carefully — one development we can stand behind — than rush to fill a timeline.";
 
@@ -135,17 +100,6 @@ export const expertise = [
     description:
       "Structuring joint ventures and investment arrangements that share value fairly.",
   },
-];
-
-/**
- * ⚠ DEMO DATA — see the note above `milestones`. Deliberately a different
- * cut of stats from the homepage's <Achievements>.
- */
-export const impactStats: Statistic[] = [
-  { label: "Ongoing Developments", value: 3 },
-  { label: "Development Area", value: 6, suffix: " acres" },
-  { label: "Locations", value: 4 },
-  { label: "Landowner Partnerships", value: 5 },
 ];
 
 export interface TeamMember {

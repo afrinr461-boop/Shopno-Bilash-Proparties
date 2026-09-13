@@ -22,4 +22,9 @@ export interface CompanySettings extends AuditFields {
   defaultLowStockThreshold?: number;
   /** How many days before a due date (installment, document expiry, booking expiry, task/milestone) the alert engine starts surfacing it. */
   reminderLeadDays?: number;
+  /** The public About page's "Our Impact" stat row — four fixed slots (not an open-ended list, so no separate CRUD table). Each is `undefined` until the admin sets a real figure; the public page shows an honest "—" placeholder rather than a fabricated number. */
+  impactOngoingDevelopments?: number;
+  impactDevelopmentAreaAcres?: number;
+  impactLocations?: number;
+  impactLandownerPartnerships?: number;
 }

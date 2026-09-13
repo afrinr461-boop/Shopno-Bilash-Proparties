@@ -68,6 +68,15 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
         />
       </div>
 
+      <h2 className="text-label text-fg-subtle mt-2 uppercase">Public &ldquo;Our Impact&rdquo; Stats</h2>
+      <p className="text-caption text-fg-subtle -mt-3">Shown on the public About page. Leave any of these empty and the site shows a placeholder instead of a made-up number.</p>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Input label="Ongoing Developments" name="impactOngoingDevelopments" type="number" defaultValue={settings.impactOngoingDevelopments} />
+        <Input label="Development Area (acres)" name="impactDevelopmentAreaAcres" type="number" defaultValue={settings.impactDevelopmentAreaAcres} />
+        <Input label="Locations" name="impactLocations" type="number" defaultValue={settings.impactLocations} />
+        <Input label="Landowner Partnerships" name="impactLandownerPartnerships" type="number" defaultValue={settings.impactLandownerPartnerships} />
+      </div>
+
       <div className="flex items-center gap-3">
         <SubmitButton />
       </div>

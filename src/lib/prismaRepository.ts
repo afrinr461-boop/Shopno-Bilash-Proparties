@@ -91,7 +91,8 @@ export type PrismaJsonModel =
   | "booking"
   | "ownershipTransfer"
   | "reminder"
-  | "notificationPreference";
+  | "notificationPreference"
+  | "companyMilestone";
 
 /**
  * Backs a feature's `Repository<T>` with the real, on-disk SQLite database

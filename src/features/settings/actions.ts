@@ -27,12 +27,20 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const timeZone = String(formData.get("timeZone") ?? "").trim();
   const defaultLowStockThresholdRaw = String(formData.get("defaultLowStockThreshold") ?? "").trim();
   const reminderLeadDaysRaw = String(formData.get("reminderLeadDays") ?? "").trim();
+  const impactOngoingDevelopmentsRaw = String(formData.get("impactOngoingDevelopments") ?? "").trim();
+  const impactDevelopmentAreaAcresRaw = String(formData.get("impactDevelopmentAreaAcres") ?? "").trim();
+  const impactLocationsRaw = String(formData.get("impactLocations") ?? "").trim();
+  const impactLandownerPartnershipsRaw = String(formData.get("impactLandownerPartnerships") ?? "").trim();
 
   if (!legalName || legalName.length < 2) return { error: "Enter a legal name." };
   if (!displayName || displayName.length < 2) return { error: "Enter a display name." };
 
   const defaultLowStockThreshold = defaultLowStockThresholdRaw ? Number(defaultLowStockThresholdRaw) : undefined;
   const reminderLeadDays = reminderLeadDaysRaw ? Number(reminderLeadDaysRaw) : undefined;
+  const impactOngoingDevelopments = impactOngoingDevelopmentsRaw ? Number(impactOngoingDevelopmentsRaw) : undefined;
+  const impactDevelopmentAreaAcres = impactDevelopmentAreaAcresRaw ? Number(impactDevelopmentAreaAcresRaw) : undefined;
+  const impactLocations = impactLocationsRaw ? Number(impactLocationsRaw) : undefined;
+  const impactLandownerPartnerships = impactLandownerPartnershipsRaw ? Number(impactLandownerPartnershipsRaw) : undefined;
 
   const existing = await companySettingsRepository.findById(COMPANY_SETTINGS_ID);
   if (!existing) return { error: "Settings record is missing." };
@@ -48,6 +56,10 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
     timeZone: timeZone || undefined,
     defaultLowStockThreshold: Number.isFinite(defaultLowStockThreshold) ? defaultLowStockThreshold : undefined,
     reminderLeadDays: Number.isFinite(reminderLeadDays) ? reminderLeadDays : undefined,
+    impactOngoingDevelopments: Number.isFinite(impactOngoingDevelopments) ? impactOngoingDevelopments : undefined,
+    impactDevelopmentAreaAcres: Number.isFinite(impactDevelopmentAreaAcres) ? impactDevelopmentAreaAcres : undefined,
+    impactLocations: Number.isFinite(impactLocations) ? impactLocations : undefined,
+    impactLandownerPartnerships: Number.isFinite(impactLandownerPartnerships) ? impactLandownerPartnerships : undefined,
     updatedBy: user.id,
     updatedAt: new Date().toISOString(),
   });
@@ -55,5 +67,6 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   await recordAuditEvent({ actorUserId: user.id, action: "settings.update", entityType: "CompanySettings", entityId: COMPANY_SETTINGS_ID });
 
   revalidatePath("/admin/settings");
+  revalidatePath("/about");
   redirect("/admin/settings");
 }

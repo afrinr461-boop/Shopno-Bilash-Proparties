@@ -33,6 +33,7 @@ import {
   CreditCard,
   AlertTriangle,
   BookOpen,
+  Milestone,
 } from "lucide-react";
 import type { Permission } from "./permissions";
 
@@ -219,6 +220,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
       { label: "Gallery", href: "/admin/content/gallery", permission: "content.view", icon: Images },
       { label: "Pages", href: "/admin/content/pages", permission: "content.view", icon: FileStack },
       { label: "Founder Profile", href: "/admin/content/founder", permission: "content.view", icon: UserCog },
+      { label: "Our Story", href: "/admin/content/story", permission: "content.view", icon: Milestone },
     ],
   },
   {

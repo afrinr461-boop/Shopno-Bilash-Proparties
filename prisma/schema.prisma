@@ -367,3 +367,13 @@ model RateLimitAttempt {
   id   String @id
   data Json
 }
+
+// The public About page's "Our Story" timeline — admin-editable (year,
+// title, summary, an optional longer "Read More" body, and a themed icon
+// per entry). Sorted by year at read time, not a stored order field, so
+// entries always land in chronological order regardless of the order
+// they were added in.
+model CompanyMilestone {
+  id   String @id
+  data Json
+}
