@@ -16,22 +16,23 @@ export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // `autoRaf: true` lets Lenis drive its own internal rAF loop instead of
+    // a second, separate one here — two independent per-frame loops (this
+    // one plus Header's own scroll-position rAF) was doing duplicate work
+    // and was part of what made scrolling feel glitchy/low-fps. A shorter
+    // `duration` also matters more than it looks: it's the window (in
+    // seconds) every wheel flick keeps recomputing scroll position and
+    // repainting the fixed header's frosted background for — shorter means
+    // less sustained per-frame work per gesture, not just a snappier feel.
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 0.8,
       easing: (t: number) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
       touchMultiplier: 1.4,
+      autoRaf: true,
     });
 
-    let frameId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      frameId = requestAnimationFrame(raf);
-    }
-    frameId = requestAnimationFrame(raf);
-
     return () => {
-      cancelAnimationFrame(frameId);
       lenis.destroy();
     };
   }, []);

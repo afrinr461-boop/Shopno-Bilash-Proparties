@@ -39,6 +39,10 @@ export function Header() {
   // not the hero image/panel, so it must fall back to the normal solid
   // treatment instead of staying "frosted" for the rest of the page.
   const [pastHero, setPastHero] = useState(false);
+  // `backdrop-blur` is dropped for as long as this is true — see the effect
+  // below for why: it's a real per-frame repaint cost that's worth paying
+  // only while the header is actually static to look at.
+  const [isScrolling, setIsScrolling] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileNavId = useId();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -50,6 +54,7 @@ export function Header() {
 
   useEffect(() => {
     let ticking = false;
+    let idleTimeout: ReturnType<typeof setTimeout> | undefined;
 
     function update() {
       const y = window.scrollY;
@@ -59,6 +64,16 @@ export function Header() {
     }
 
     function onScroll() {
+      // Repeated `setIsScrolling(true)` calls while already `true` are a
+      // no-op re-render-wise (React bails out on an unchanged primitive),
+      // so this is cheap even though `onScroll` fires far more often than
+      // native scrolling ever did (Lenis's own smoothing dispatches a
+      // "scroll" event on every eased frame of a gesture, not just a
+      // handful per flick).
+      setIsScrolling(true);
+      clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(() => setIsScrolling(false), 150);
+
       if (!ticking) {
         requestAnimationFrame(update);
         ticking = true;
@@ -73,7 +88,10 @@ export function Header() {
     // mismatch until the next scroll happened to fire.
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(idleTimeout);
+    };
   }, []);
 
   // Close the mobile panel automatically if the viewport grows past the
@@ -103,8 +121,15 @@ export function Header() {
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ease-[var(--ease-standard)]",
-          lightSolid && "bg-bg/70 border-b border-border shadow-sm backdrop-blur-xl",
-          frosted && "bg-fg/20 border-b border-white/10 backdrop-blur-xl",
+          // `backdrop-blur` is a genuinely expensive per-frame repaint on a
+          // `position: fixed` element visible for nearly the whole page —
+          // dropped entirely while `isScrolling` (the exact window where
+          // its cost is actually felt as jank) and only paid while the
+          // header is static to look at. `-md`, not `-xl`, even then: a
+          // smaller blur radius is cheaper and the frosted-glass read
+          // barely changes.
+          lightSolid && cn("bg-bg/70 border-b border-border shadow-sm", !isScrolling && "backdrop-blur-md"),
+          frosted && cn("bg-fg/20 border-b border-white/10", !isScrolling && "backdrop-blur-md"),
           !lightSolid && !frosted && "border-b border-transparent bg-transparent",
         )}
       >
