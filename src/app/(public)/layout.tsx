@@ -7,6 +7,7 @@ import { SitePageLoader } from "@/components/navigation/SitePageLoader";
 import { PageContent } from "@/components/navigation/PageContent";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { SearchProvider } from "@/components/search/SearchContext";
+import { SmoothScroll } from "@/components/navigation/SmoothScroll";
 import { getSiteNavDataAsync } from "@/lib/siteNavDataAsync";
 
 /**
@@ -24,6 +25,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <HeaderVariantProvider>
       <SearchProvider>
+        <SmoothScroll />
         <Header />
         <PageContent>{children}</PageContent>
         <Footer />
