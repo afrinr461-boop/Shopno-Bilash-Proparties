@@ -89,15 +89,17 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
 /**
  * Dev-only convenience so testing doesn't require retyping credentials on
  * every sign-in — skips password verification entirely and signs in as the
- * first active `super_admin` account. Hard-blocked outside development so
- * it can never ship: not just hidden from the UI (`LoginForm.tsx` also only
- * renders its button when `NODE_ENV !== "production"`), but refused here
- * too, since the button being hidden is not the same as the action being
- * safe to call directly.
+ * first active `super_admin` account. Off by default even in development:
+ * requires both `NODE_ENV !== "production"` AND an explicit opt-in
+ * (`NEXT_PUBLIC_ENABLE_DEV_LOGIN=true` in `.env.local`), so a misconfigured
+ * `NODE_ENV` on some host is never the only thing standing between this
+ * and a live site. Not just hidden from the UI (`LoginForm.tsx` checks the
+ * same two conditions) but refused here too, since a hidden button is not
+ * the same as the action being safe to call directly.
  */
 export async function devSuperAdminLogin(): Promise<void> {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("devSuperAdminLogin is not available in production.");
+  if (process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "true") {
+    throw new Error("devSuperAdminLogin is not enabled. Set NEXT_PUBLIC_ENABLE_DEV_LOGIN=true in .env.local to use it.");
   }
 
   const users = await userRepository.list();

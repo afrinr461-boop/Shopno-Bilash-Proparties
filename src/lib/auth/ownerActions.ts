@@ -211,8 +211,8 @@ export async function ownerPinLoginAction(_prevState: OwnerAuthState, formData: 
 
 /** Dev-only shortcut, mirroring `lib/auth/actions.ts`'s `devSuperAdminLogin` — signs straight into the first active owner account so the portal can be reached without walking the phone+PIN flow during local testing. Never available in production. */
 export async function devOwnerLogin(): Promise<void> {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("devOwnerLogin is not available in production.");
+  if (process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "true") {
+    throw new Error("devOwnerLogin is not enabled. Set NEXT_PUBLIC_ENABLE_DEV_LOGIN=true in .env.local to use it.");
   }
 
   const users = await userRepository.list();

@@ -30,8 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — real secrets, never committed. `.env.example` is the one
+# exception: a template with no actual values, meant to be committed so
+# anyone cloning the repo knows which variables to set.
 .env*
+!.env.example
 
 # local SQLite database (prisma/schema.prisma) — real data, never committed.
 # Matched at any depth (not just /prisma/dev.db) because DATABASE_URL's

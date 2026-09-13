@@ -132,7 +132,7 @@ export function OwnerLoginFlow() {
         <Input label="Phone Number" name="phone" type="tel" autoComplete="tel" required placeholder="01XXXXXXXXX" />
         <SubmitButton label="Continue" />
       </form>
-      {process.env.NODE_ENV !== "production" && (
+      {process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" && (
         <form action={devOwnerLogin} className="border-border border-t pt-4">
           <DevOwnerButton />
         </form>

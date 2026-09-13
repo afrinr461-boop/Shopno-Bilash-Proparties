@@ -56,7 +56,7 @@ export function LoginForm() {
         />
         <SubmitButton />
       </form>
-      {process.env.NODE_ENV !== "production" && (
+      {process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" && (
         <form action={devSuperAdminLogin} className="border-border border-t pt-4">
           <DevSuperAdminButton />
         </form>
