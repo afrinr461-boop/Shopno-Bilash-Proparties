@@ -17,8 +17,17 @@ export interface AdminSidebarProps {
  * leaves it visually stuck, and a full-width, always-labelled sidebar is
  * simpler and more reliable anyway (`AdminSidebarNav`'s `collapsed` mode
  * still exists for any future caller that wants it).
+ *
+ * Three fixed regions, only the middle one scrolls: the logo header, the
+ * scrollable nav groups, then "Help" pinned to the bottom always — it
+ * used to be just the last group inside the same scrolling list, which
+ * meant it scrolled out of view along with everything else instead of
+ * staying reachable like a footer should.
  */
 export function AdminSidebar({ role, incompleteHrefs }: AdminSidebarProps) {
+  const scrollableGroups = ADMIN_NAV_GROUPS.filter((group) => group.label !== "Help");
+  const helpGroup = ADMIN_NAV_GROUPS.filter((group) => group.label === "Help");
+
   return (
     <aside className="border-border bg-surface sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r lg:flex">
       <Link href="/admin" className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -27,7 +36,11 @@ export function AdminSidebar({ role, incompleteHrefs }: AdminSidebarProps) {
       </Link>
 
       <div className="thin-scrollbar flex-1 overflow-y-auto px-3 py-4">
-        <AdminSidebarNav groups={ADMIN_NAV_GROUPS} role={role} incompleteHrefs={incompleteHrefs} />
+        <AdminSidebarNav groups={scrollableGroups} role={role} incompleteHrefs={incompleteHrefs} />
+      </div>
+
+      <div className="border-border shrink-0 border-t px-3 py-4">
+        <AdminSidebarNav groups={helpGroup} role={role} incompleteHrefs={incompleteHrefs} />
       </div>
     </aside>
   );
