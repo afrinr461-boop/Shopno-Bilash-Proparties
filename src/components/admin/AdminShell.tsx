@@ -22,6 +22,12 @@ export interface AdminShellProps {
  * already does. Deliberately not the public site's cinematic
  * `PageTransition`/`SitePageLoader` (brief §22) — plain instant
  * route swaps, since admin users prioritize speed over ceremony.
+ *
+ * Both `AdminSidebar` and `AdminHeader` are `position: fixed` (see their
+ * own comments for why), so neither occupies space in this flex row —
+ * the content column gets `lg:pl-64` for the sidebar's width and
+ * `<main>` gets `pt-16` for the header's height instead, so nothing
+ * renders underneath either.
  */
 export function AdminShell({ user, children, incompleteHrefs }: AdminShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -36,9 +42,9 @@ export function AdminShell({ user, children, incompleteHrefs }: AdminShellProps)
         incompleteHrefs={incompleteHrefs}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="min-w-0 flex-1 lg:pl-64">
         <AdminHeader user={user} onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 pt-16">{children}</main>
       </div>
     </div>
   );

@@ -18,6 +18,15 @@ export interface AdminSidebarProps {
  * simpler and more reliable anyway (`AdminSidebarNav`'s `collapsed` mode
  * still exists for any future caller that wants it).
  *
+ * `position: fixed`, not `sticky` — the same fix (and the same reason)
+ * as the public site's `Header`: `sticky` on this element was visibly
+ * unstable while the page scrolled (the same class of compositor bug as
+ * the width-toggle one above), collapsing down to just its last child
+ * instead of staying put as a whole. `fixed` sidesteps it completely by
+ * taking the element out of normal layout entirely — `AdminShell`
+ * compensates with `lg:pl-64` on the content column so nothing sits
+ * underneath it.
+ *
  * Three fixed regions, only the middle one scrolls: the logo header, the
  * scrollable nav groups, then "Help" pinned to the bottom always — it
  * used to be just the last group inside the same scrolling list, which
@@ -29,7 +38,7 @@ export function AdminSidebar({ role, incompleteHrefs }: AdminSidebarProps) {
   const helpGroup = ADMIN_NAV_GROUPS.filter((group) => group.label === "Help");
 
   return (
-    <aside className="border-border bg-surface sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r lg:flex">
+    <aside className="border-border bg-surface fixed inset-y-0 left-0 z-30 hidden h-screen w-64 flex-col border-r lg:flex">
       <Link href="/admin" className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
         <Image src="/logo.webp" alt="" width={1477} height={1065} className="h-11 w-auto object-contain" />
         <span className="text-caption text-fg-subtle">Admin</span>

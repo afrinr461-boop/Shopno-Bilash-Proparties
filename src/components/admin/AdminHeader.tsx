@@ -28,10 +28,16 @@ function initials(name: string): string {
  * replacing the earlier disabled placeholder. The notification bell still
  * has no badge/dropdown — that's still genuinely unbuilt, not this step's
  * scope.
+ *
+ * `position: fixed`, not `sticky` — same reproducible compositor bug (and
+ * same fix) as `AdminSidebar`, which this sits beside; `lg:left-64` keeps
+ * it flush against that sidebar's own fixed width instead of overlapping
+ * it. `AdminShell`'s `<main>` adds matching top padding since this no
+ * longer occupies space in normal flow.
  */
 export function AdminHeader({ user, onOpenMobileNav }: AdminHeaderProps) {
   return (
-    <header className="border-border bg-bg/95 sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b px-4 backdrop-blur-sm sm:px-6">
+    <header className="border-border bg-bg/95 fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-4 border-b px-4 backdrop-blur-sm sm:px-6 lg:left-64">
       <IconButton icon={Menu} label="Open menu" onClick={onOpenMobileNav} className="lg:hidden" />
 
       <GlobalSearch user={user} />
