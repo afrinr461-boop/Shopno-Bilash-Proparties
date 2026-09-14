@@ -14,6 +14,8 @@ export interface AdminSidebarNavProps {
   /** Icon-only rail — group labels hidden, item labels shown in a tooltip instead. Desktop only; the mobile drawer never collapses. */
   collapsed?: boolean;
   onNavigate?: () => void;
+  /** Hrefs to show a small red "you haven't filled this in yet" dot on — see `src/lib/adminCompleteness.ts`. */
+  incompleteHrefs?: string[];
 }
 
 /**
@@ -23,8 +25,9 @@ export interface AdminSidebarNavProps {
  * marker — the future information architecture is visible without ever
  * being a broken/dead link.
  */
-export function AdminSidebarNav({ groups, role, collapsed, onNavigate }: AdminSidebarNavProps) {
+export function AdminSidebarNav({ groups, role, collapsed, onNavigate, incompleteHrefs }: AdminSidebarNavProps) {
   const pathname = usePathname();
+  const incompleteSet = new Set(incompleteHrefs);
 
   return (
     <nav aria-label="Admin" className="flex flex-col gap-6">
@@ -41,6 +44,7 @@ export function AdminSidebarNav({ groups, role, collapsed, onNavigate }: AdminSi
               {visibleItems.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href;
+                const incomplete = !item.comingSoon && incompleteSet.has(item.href);
 
                 const row = (
                   <span
@@ -49,9 +53,26 @@ export function AdminSidebarNav({ groups, role, collapsed, onNavigate }: AdminSi
                       collapsed && "justify-center px-2",
                     )}
                   >
-                    {Icon && <Icon aria-hidden className={cn("size-4.5 shrink-0", active && "text-accent")} />}
+                    {Icon && (
+                      <span className="relative shrink-0">
+                        <Icon aria-hidden className={cn("size-4.5", active && "text-accent")} />
+                        {incomplete && (
+                          <span
+                            aria-hidden
+                            className="bg-error border-surface absolute -top-0.5 -right-0.5 size-2 rounded-full border"
+                          />
+                        )}
+                      </span>
+                    )}
                     {!collapsed && (
                       <span className={cn("text-nav flex-1 truncate", active && "font-medium")}>{item.label}</span>
+                    )}
+                    {!collapsed && incomplete && (
+                      <span
+                        aria-label="Missing information"
+                        title="Missing information"
+                        className="bg-error size-1.5 shrink-0 rounded-full"
+                      />
                     )}
                     {!collapsed && item.comingSoon && (
                       <span className="text-caption text-fg-subtle bg-surface shrink-0 rounded px-1.5 py-0.5">

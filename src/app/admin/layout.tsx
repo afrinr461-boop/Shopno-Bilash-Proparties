@@ -4,6 +4,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { PermissionDeniedState } from "@/components/feedback/PermissionDeniedState";
 import { Container } from "@/components/ui/Container";
 import { STAFF_ROLES } from "@/config/roles";
+import { getIncompleteNavHrefs } from "@/lib/adminCompleteness";
 
 /**
  * Admin / management platform shell (Layer C). Gated on both "is signed in"
@@ -25,5 +26,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     );
   }
 
-  return <AdminShell user={user}>{children}</AdminShell>;
+  const incompleteHrefs = await getIncompleteNavHrefs();
+
+  return (
+    <AdminShell user={user} incompleteHrefs={incompleteHrefs}>
+      {children}
+    </AdminShell>
+  );
 }

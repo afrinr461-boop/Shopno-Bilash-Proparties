@@ -10,6 +10,8 @@ import { AdminHeader } from "./AdminHeader";
 export interface AdminShellProps {
   user: User;
   children: ReactNode;
+  /** Hrefs of nav items missing data worth flagging — see `src/lib/adminCompleteness.ts`. */
+  incompleteHrefs: string[];
 }
 
 /**
@@ -21,13 +23,18 @@ export interface AdminShellProps {
  * `PageTransition`/`SitePageLoader` (brief §22) — plain instant
  * route swaps, since admin users prioritize speed over ceremony.
  */
-export function AdminShell({ user, children }: AdminShellProps) {
+export function AdminShell({ user, children, incompleteHrefs }: AdminShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="bg-bg flex min-h-screen">
-      <AdminSidebar role={user.role} />
-      <AdminMobileSidebar open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} role={user.role} />
+      <AdminSidebar role={user.role} incompleteHrefs={incompleteHrefs} />
+      <AdminMobileSidebar
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+        role={user.role}
+        incompleteHrefs={incompleteHrefs}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminHeader user={user} onOpenMobileNav={() => setMobileNavOpen(true)} />

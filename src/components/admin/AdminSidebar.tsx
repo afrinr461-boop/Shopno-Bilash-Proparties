@@ -6,6 +6,7 @@ import { AdminSidebarNav } from "./AdminSidebarNav";
 
 export interface AdminSidebarProps {
   role: RoleName;
+  incompleteHrefs: string[];
 }
 
 /**
@@ -17,7 +18,7 @@ export interface AdminSidebarProps {
  * simpler and more reliable anyway (`AdminSidebarNav`'s `collapsed` mode
  * still exists for any future caller that wants it).
  */
-export function AdminSidebar({ role }: AdminSidebarProps) {
+export function AdminSidebar({ role, incompleteHrefs }: AdminSidebarProps) {
   return (
     <aside className="border-border bg-surface sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r lg:flex">
       <Link href="/admin" className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -26,7 +27,7 @@ export function AdminSidebar({ role }: AdminSidebarProps) {
       </Link>
 
       <div className="thin-scrollbar flex-1 overflow-y-auto px-3 py-4">
-        <AdminSidebarNav groups={ADMIN_NAV_GROUPS} role={role} />
+        <AdminSidebarNav groups={ADMIN_NAV_GROUPS} role={role} incompleteHrefs={incompleteHrefs} />
       </div>
     </aside>
   );

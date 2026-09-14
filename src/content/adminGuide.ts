@@ -36,6 +36,7 @@ export const ADMIN_GUIDE: GuideGroup[] = [
           "Company Overview, Financial Overview, Construction, Sales, Inventory, Documents and Alerts sections summarize every module at once.",
           "Every KPI card is clickable — it takes you straight to the underlying list or report (e.g. click \"Outstanding\" to see exactly which owners owe money).",
           "Recent Activity shows the latest real actions across the whole system; Quick Actions gives one-click shortcuts to the most common tasks.",
+          "A small red dot on a sidebar item (Projects, Sales, Settings, etc.) means that section is still empty or missing key info — it disappears the moment you add something there, so it's a running checklist of what's left to set up, not an alert about a problem.",
         ],
       },
     ],
