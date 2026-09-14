@@ -1,9 +1,8 @@
 import "server-only";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { getUploadStore, isUsingBlobStore } from "@/lib/uploadStore";
 
-const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
 const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15MB — comfortably above a scanned deed/agreement, well under the 20MB Server Action body limit set in next.config.ts.
 const ALLOWED_EXTENSIONS = new Set(["pdf", "jpg", "jpeg", "png", "webp", "doc", "docx"]);
 
@@ -23,14 +22,15 @@ function getExtension(fileName: string): string {
 }
 
 /**
- * Writes an uploaded `File` (from a Server Action's `FormData`) to
- * `public/<subdir>/`, named `<uuid>-<sanitized original name>` so two
- * uploads never collide. Returns the public URL path (usable directly as
- * `fileUrl`/`<img src>`) and the file's size/extension for display.
- * Local-disk storage, not a cloud bucket — this project has no cloud
- * storage precedent anywhere and runs SQLite locally; moving to a real
- * object store later is a service-layer swap behind this same function,
- * not a rewrite of every caller.
+ * Writes an uploaded `File` (from a Server Action's `FormData`) via
+ * `getUploadStore()` — local disk in dev, Netlify Blobs once deployed (see
+ * `uploadStore.ts`'s own comment) — named `<uuid>-<sanitized original
+ * name>` so two uploads never collide. Returns the public URL path (usable
+ * directly as `fileUrl`/`<img src>`) and the file's size/extension for
+ * display: a local-disk file keeps the old `/uploads/...` path (served by
+ * Next's static `public/` folder), a Blob-stored one is served through
+ * `/api/uploads/...` (`src/app/api/uploads/[...path]/route.ts`) instead,
+ * since a Blob has no filesystem path of its own to serve statically.
  */
 export async function saveUploadedFile(file: File, subdir: string): Promise<SavedFile> {
   if (file.size === 0) throw new Error("The selected file is empty.");
@@ -41,22 +41,23 @@ export async function saveUploadedFile(file: File, subdir: string): Promise<Save
     throw new Error("Unsupported file type — allowed: PDF, JPG, PNG, WEBP, DOC, DOCX.");
   }
 
-  const dir = path.join(UPLOADS_ROOT, subdir);
-  await mkdir(dir, { recursive: true });
-
   const fileName = `${randomUUID()}-${sanitizeFileName(file.name)}`;
+  const relativePath = `${subdir}/${fileName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, fileName), buffer);
+  await getUploadStore().write(relativePath, buffer);
 
-  return { url: `/uploads/${subdir}/${fileName}`, size: file.size, extension };
+  const urlPrefix = isUsingBlobStore() ? "/api/uploads" : "/uploads";
+  return { url: `${urlPrefix}/${relativePath}`, size: file.size, extension };
 }
 
-/** Best-effort cleanup — a missing file (already deleted, or never a local path) is not an error. */
+/** Best-effort cleanup — a missing file (already deleted, or a path from before this store existed) is not an error. */
 export async function deleteUploadedFile(url: string): Promise<void> {
-  if (!url.startsWith("/uploads/")) return;
-  try {
-    await unlink(path.join(process.cwd(), "public", url));
-  } catch {
-    // Already gone, or the path predates local storage — nothing to do.
-  }
+  const relativePath = url.startsWith("/api/uploads/")
+    ? url.slice("/api/uploads/".length)
+    : url.startsWith("/uploads/")
+      ? url.slice("/uploads/".length)
+      : null;
+  if (!relativePath) return;
+
+  await getUploadStore().remove(relativePath);
 }

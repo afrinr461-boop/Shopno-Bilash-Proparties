@@ -1,10 +1,7 @@
 import "server-only";
-import path from "node:path";
-import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import AdmZip from "adm-zip";
 import { prisma } from "@/lib/db";
-
-const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
+import { getUploadStore } from "@/lib/uploadStore";
 
 // Ephemeral security bookkeeping, not real business data — restoring old
 // rate-limit rows on top of a live system could reintroduce a stale
@@ -21,20 +18,6 @@ function listBackupModelNames(): string[] {
   });
 }
 
-async function listFilesRecursive(dir: string): Promise<string[]> {
-  try {
-    const relativePaths = await readdir(dir, { recursive: true });
-    const files: string[] = [];
-    for (const relative of relativePaths) {
-      const full = path.join(dir, relative);
-      if ((await stat(full)).isFile()) files.push(full);
-    }
-    return files;
-  } catch {
-    return []; // No uploads directory yet (a fresh install) — an empty backup section, not an error.
-  }
-}
-
 export interface BackupManifest {
   createdAt: string;
   mode: "full" | "data";
@@ -48,9 +31,10 @@ export interface BackupManifest {
  * `data.json` (every table dumped whole — the same shape
  * `scripts/export-data.mjs` produces, so either can read the other's
  * output), and, in `"full"` mode, every file currently under
- * `public/uploads/` at its same relative path — gallery photos, project/
- * unit/building images, founder photo, uploaded documents, everything an
- * admin has ever uploaded through this app.
+ * the active upload store (`lib/uploadStore.ts` — local disk or Netlify
+ * Blobs) at its same relative path — gallery photos, project/unit/building
+ * images, founder photo, uploaded documents, everything an admin has ever
+ * uploaded through this app.
  */
 export async function buildBackupZip(mode: "full" | "data"): Promise<Buffer> {
   const modelNames = listBackupModelNames();
@@ -67,10 +51,11 @@ export async function buildBackupZip(mode: "full" | "data"): Promise<Buffer> {
   let fileCount = 0;
 
   if (mode === "full") {
-    const files = await listFilesRecursive(UPLOADS_ROOT);
-    for (const filePath of files) {
-      const relative = path.relative(UPLOADS_ROOT, filePath).split(path.sep).join("/");
-      const content = await readFile(filePath);
+    const store = getUploadStore();
+    const relativePaths = await store.list();
+    for (const relative of relativePaths) {
+      const content = await store.read(relative);
+      if (!content) continue; // Listed but unreadable between the list() and read() calls — skip rather than fail the whole backup.
       zip.addFile(`uploads/${relative}`, content);
       fileCount += 1;
     }
@@ -156,12 +141,11 @@ export async function restoreFromZip(buffer: Buffer): Promise<RestoreSummary> {
 
   let fileCount = 0;
   const uploadEntries = zip.getEntries().filter((e) => !e.isDirectory && e.entryName.startsWith("uploads/"));
+  const store = getUploadStore();
   for (const entry of uploadEntries) {
     const relative = entry.entryName.slice("uploads/".length);
-    if (!relative || relative.includes("..")) continue; // Defensive — a crafted entry name shouldn't be able to write outside the uploads folder.
-    const destination = path.join(UPLOADS_ROOT, relative);
-    await mkdir(path.dirname(destination), { recursive: true });
-    await writeFile(destination, entry.getData());
+    if (!relative || relative.includes("..")) continue; // Defensive — a crafted entry name shouldn't be able to write outside the uploads store.
+    await store.write(relative, entry.getData());
     fileCount += 1;
   }
 
