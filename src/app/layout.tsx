@@ -45,9 +45,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-theme="light"
-      className={`${inter.variable} ${manrope.variable} ${notoSansBengali.variable} antialiased`}
+      className={`${inter.variable} ${manrope.variable} ${notoSansBengali.variable} antialiased overflow-x-hidden`}
     >
-      <body className="min-h-screen flex flex-col bg-bg text-fg">
+      {/*
+        `overflow-x-hidden` here is a deliberate safety net, not a fix for
+        one specific element: decorative "bleed" motifs (e.g. Values.tsx's
+        two side graphics, positioned outside their narrow container into
+        the page gutter) can overflow the viewport at some breakpoints
+        depending on exact gutter width, which showed up as a real
+        horizontal scrollbar and made scrolling feel glitchy. The page
+        itself should never scroll horizontally — DESIGN_SYSTEM.md already
+        says wide content belongs in its own `overflow-x-auto` container,
+        never the page — this just enforces that at the root instead of
+        chasing every current/future decorative element's exact math.
+      */}
+      <body className="min-h-screen flex flex-col overflow-x-hidden bg-bg text-fg">
         {children}
       </body>
     </html>
