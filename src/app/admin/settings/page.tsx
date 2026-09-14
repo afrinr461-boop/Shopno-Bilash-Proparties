@@ -77,6 +77,7 @@ export default async function AdminSettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <Fact label="Address" value={settings.address ?? "—"} />
             <Fact label="Phone" value={settings.phone ?? "—"} />
+            <Fact label="WhatsApp" value={settings.whatsapp ?? "—"} />
             <Fact label="Email" value={settings.email ?? "—"} />
             <Fact label="Website" value={settings.website ?? "—"} />
             <Fact label="Hours" value={settings.hours ?? "—"} />

@@ -21,6 +21,7 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const displayName = String(formData.get("displayName") ?? "").trim();
   const address = String(formData.get("address") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const website = String(formData.get("website") ?? "").trim();
   const hours = String(formData.get("hours") ?? "").trim();
@@ -57,6 +58,7 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
     displayName,
     address: address || undefined,
     phone: phone || undefined,
+    whatsapp: whatsapp || undefined,
     email: email || undefined,
     website: website || undefined,
     hours: hours || undefined,

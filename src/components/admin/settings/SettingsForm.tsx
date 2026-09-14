@@ -45,6 +45,13 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
       <div className="grid gap-5 sm:grid-cols-2">
         <Input label="Address (optional)" name="address" defaultValue={settings.address} />
         <Input label="Phone (optional)" name="phone" defaultValue={settings.phone} />
+        <Input
+          label="WhatsApp Number (optional)"
+          name="whatsapp"
+          defaultValue={settings.whatsapp}
+          placeholder="e.g. 8801XXXXXXXXX"
+          helperText="With country code, digits only — becomes a tap-to-chat link in the footer."
+        />
         <Input label="Email (optional)" name="email" type="email" defaultValue={settings.email} />
         <Input label="Website (optional)" name="website" defaultValue={settings.website} />
         <div className="sm:col-span-2">

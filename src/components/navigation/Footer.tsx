@@ -6,7 +6,7 @@ import { TrustEmblem } from "@/components/ui/TrustEmblem";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
-import { Check, Mail, MapPin, Clock, Phone } from "lucide-react";
+import { Check, Mail, MapPin, Clock, Phone, MessageCircle } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon, PinterestIcon, TiktokIcon, YoutubeIcon } from "@/components/ui/SocialIcons";
 import { brandBlurb, footerGroups, footerHighlights, legalQuickLinks, statement } from "@/content/footer";
 import type { CompanySettings } from "@/types/settings";
@@ -48,11 +48,17 @@ export function Footer({ settings }: { settings: CompanySettings | null }) {
 
   const contactRows = settings
     ? [
-        { Icon: MapPin, value: settings.address },
-        { Icon: Phone, value: settings.phone },
-        { Icon: Mail, value: settings.email },
-        { Icon: Clock, value: settings.hours },
-      ].filter((row): row is { Icon: typeof MapPin; value: string } => !!row.value)
+        { Icon: Mail, label: "Email", value: settings.email, href: settings.email ? `mailto:${settings.email}` : undefined },
+        { Icon: Phone, label: "Phone", value: settings.phone, href: settings.phone ? `tel:${settings.phone.replace(/[^+\d]/g, "")}` : undefined },
+        {
+          Icon: MessageCircle,
+          label: "WhatsApp",
+          value: settings.whatsapp,
+          href: settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, "")}` : undefined,
+        },
+        { Icon: Clock, label: "Hours", value: settings.hours, href: undefined },
+        { Icon: MapPin, label: "Address", value: settings.address, href: undefined },
+      ].filter((row): row is (typeof row) & { value: string } => !!row.value)
     : [];
   const activeSocials = settings
     ? SOCIAL_PLATFORMS.map((platform) => ({ ...platform, url: settings[platform.key] }))
@@ -112,15 +118,31 @@ export function Footer({ settings }: { settings: CompanySettings | null }) {
           </div>
 
           {showContactRow && (
-            <div className="border-border mt-12 grid gap-8 border-t pt-10 sm:grid-cols-2">
+            <div className="border-border mt-12 flex flex-col gap-10 border-t pt-10 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
               {contactRows.length > 0 && (
                 <Reveal>
                   <p className="text-label text-fg-subtle mb-4 uppercase">Contact</p>
-                  <ul className="flex flex-col gap-2.5">
-                    {contactRows.map(({ Icon, value }) => (
-                      <li key={value} className="text-body-sm text-fg-muted flex items-center gap-2.5">
-                        <Icon aria-hidden className="text-fg-subtle size-4 shrink-0" />
-                        {value}
+                  <ul className="flex flex-col gap-3">
+                    {contactRows.map(({ Icon, label, value, href }) => (
+                      <li key={label} className="flex items-center gap-3">
+                        <span className="border-border-strong text-fg-muted flex size-8 shrink-0 items-center justify-center rounded-full border">
+                          <Icon aria-hidden className="size-3.5" />
+                        </span>
+                        <span className="text-body-sm">
+                          <span className="text-fg-subtle">{label}: </span>
+                          {href ? (
+                            <a
+                              href={href}
+                              target={href.startsWith("http") ? "_blank" : undefined}
+                              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                              className="text-fg-muted hover:text-fg transition-colors"
+                            >
+                              {value}
+                            </a>
+                          ) : (
+                            <span className="text-fg-muted">{value}</span>
+                          )}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -128,9 +150,9 @@ export function Footer({ settings }: { settings: CompanySettings | null }) {
               )}
 
               {activeSocials.length > 0 && (
-                <Reveal delay={60} className="sm:text-right">
-                  <p className="text-label text-fg-subtle mb-4 uppercase">Follow</p>
-                  <ul className="flex items-center gap-3 sm:justify-end">
+                <Reveal delay={60}>
+                  <p className="text-label text-fg-subtle mb-4 uppercase sm:text-right">Follow</p>
+                  <ul className="flex items-center gap-3">
                     {activeSocials.map(({ key, label, Icon, url }) => (
                       <li key={key}>
                         <a
@@ -138,9 +160,10 @@ export function Footer({ settings }: { settings: CompanySettings | null }) {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={label}
-                          className="border-border-strong text-fg-muted hover:border-fg-subtle hover:text-fg flex size-9 items-center justify-center rounded-full border transition-colors"
+                          title={label}
+                          className="border-border-strong text-fg-muted hover:border-accent hover:text-accent flex size-10 items-center justify-center rounded-full border transition-colors"
                         >
-                          <Icon className="size-4" />
+                          <Icon className="size-4.5" />
                         </a>
                       </li>
                     ))}

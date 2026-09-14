@@ -13,6 +13,8 @@ export interface CompanySettings extends AuditFields {
   displayName: string;
   address?: string;
   phone?: string;
+  /** Digits only (with country code, e.g. "8801XXXXXXXXX") — the footer builds a `https://wa.me/<digits>` link from this directly, so anything typed here has non-digit characters stripped before use. Separate from `phone` since a business's call number and WhatsApp number are often different in Bangladesh. */
+  whatsapp?: string;
   email?: string;
   website?: string;
   /** Free text since hours don't fit one fixed format (e.g. "Sat–Thu, 10am–7pm (GMT+6)") — shown in the footer's Contact column next to phone/email/address, hidden entirely while unset. */
