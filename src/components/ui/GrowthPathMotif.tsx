@@ -6,33 +6,44 @@ interface Building {
   x: number;
   width: number;
   height: number;
-  cols: number;
-  rows: number;
 }
 
 const GROUND_Y = 300;
+const PAD = 5;
+const GAP = 5;
+// One shared window module every building's grid is fit to, rather than a
+// hand-picked cols/rows per building — that let each building's "bricks"
+// come out a visibly different size from its neighbors, which is what read
+// as unpolished. Rounding to the nearest whole column/row per building
+// still leaves a touch of give, but never enough to look mismatched.
+const TARGET_CELL_W = 13;
+const TARGET_CELL_H = 17;
 
 // Progressively taller, left to right — the skyline itself tells the
 // growth story, not just an abstract line laid over it.
 const BUILDINGS: Building[] = [
-  { x: 20, width: 46, height: 70, cols: 2, rows: 3 },
-  { x: 84, width: 40, height: 110, cols: 2, rows: 5 },
-  { x: 142, width: 58, height: 150, cols: 3, rows: 6 },
-  { x: 224, width: 44, height: 200, cols: 2, rows: 8 },
-  { x: 292, width: 62, height: 250, cols: 3, rows: 10 },
+  { x: 20, width: 46, height: 70 },
+  { x: 84, width: 40, height: 110 },
+  { x: 142, width: 58, height: 150 },
+  { x: 224, width: 44, height: 200 },
+  { x: 292, width: 62, height: 250 },
 ];
 
+function moduleCount(span: number, target: number) {
+  return Math.max(1, Math.round((span - 2 * PAD + GAP) / (target + GAP)));
+}
+
 function windowsFor(building: Building) {
-  const pad = 5;
-  const gap = 5;
-  const cellW = (building.width - pad * 2 - gap * (building.cols - 1)) / building.cols;
-  const cellH = (building.height - pad * 2 - gap * (building.rows - 1)) / building.rows;
+  const cols = moduleCount(building.width, TARGET_CELL_W);
+  const rows = moduleCount(building.height, TARGET_CELL_H);
+  const cellW = (building.width - PAD * 2 - GAP * (cols - 1)) / cols;
+  const cellH = (building.height - PAD * 2 - GAP * (rows - 1)) / rows;
   const rects: { x: number; y: number }[] = [];
-  for (let r = 0; r < building.rows; r++) {
-    for (let c = 0; c < building.cols; c++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       rects.push({
-        x: building.x + pad + c * (cellW + gap),
-        y: GROUND_Y - building.height + pad + r * (cellH + gap),
+        x: building.x + PAD + c * (cellW + GAP),
+        y: GROUND_Y - building.height + PAD + r * (cellH + GAP),
       });
     }
   }
@@ -50,31 +61,33 @@ function windowsFor(building: Building) {
  * once via the existing `<Reveal>`/IntersectionObserver wrapper.
  */
 // A straight-segment polyline through steadily-taller roofs reads as one
-// rigid diagonal ruler line, not a "growth path" — this bows each segment
-// into a gentle S-curve instead (control points nudged off-axis, alternating
-// which side they bulge to), so the line still touches every rooftop but
-// gets there on a soft wave rather than a straight run.
-function wavyPathThrough(points: { x: number; y: number }[]) {
-  const [first, ...rest] = points;
-  let d = `M ${first.x} ${first.y}`;
-  let prev = first;
-  rest.forEach((point, i) => {
-    const dx = point.x - prev.x;
-    const dy = point.y - prev.y;
-    const bulge = i % 2 === 0 ? -16 : 16;
-    const c1x = prev.x + dx * 0.33;
-    const c1y = prev.y + dy * 0.33 + bulge;
-    const c2x = prev.x + dx * 0.66;
-    const c2y = prev.y + dy * 0.66 - bulge;
-    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${point.x} ${point.y}`;
-    prev = point;
-  });
-  return d;
+// rigid diagonal ruler line, not a "growth path". A fixed alternating bulge
+// per segment fixed that but overcorrected into an obviously artificial
+// zig-zag, especially across uneven segment lengths. A Catmull-Rom spline
+// (converted to cubic Beziers) instead threads the same points with
+// continuous, natural tangents — every stop still sits exactly on a
+// rooftop, but the line between them curves the way a hand-drawn trend
+// line would, not a mechanical wave.
+function smoothPathThrough(points: { x: number; y: number }[]) {
+  if (points.length < 2) return "";
+  const d = [`M ${points[0].x} ${points[0].y}`];
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] ?? points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d.push(`C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`);
+  }
+  return d.join(" ");
 }
 
 export function GrowthPathMotif({ className }: GrowthPathMotifProps) {
   const roofPoints = BUILDINGS.map((b) => ({ x: b.x + b.width / 2, y: GROUND_Y - b.height - 14 }));
-  const pathD = wavyPathThrough(roofPoints);
+  const pathD = smoothPathThrough(roofPoints);
 
   return (
     <svg aria-hidden viewBox="0 0 380 320" fill="none" className={className}>

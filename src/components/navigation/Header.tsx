@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Container } from "@/components/ui/Container";
-import { cn } from "@/lib/utils";
 import { DesktopNav } from "./DesktopNav";
 import { Logo } from "./Logo";
 import { MenuButton } from "./MenuButton";
@@ -13,16 +12,12 @@ import { SavedTrigger } from "@/components/saved/SavedTrigger";
 /**
  * Global site header — permanently transparent, on every page and at every
  * scroll position (no solid/frosted fill, per explicit feedback that a
- * background fill read as a heavy opaque bar once scrolled). Nav content is
- * always the light "inverted" tone with a soft dark drop-shadow instead: a
- * fixed white-on-shadow treatment reads over both light and dark page
- * content without needing to track what's actually behind the header, which
- * a background-color swap would.
- *
- * The one exception is the mobile panel: `MobileNav` itself is a solid
- * light (`bg-bg`) full-screen sheet, so the header switches to the normal
- * dark tone (no shadow needed) while it's open, matching that opaque
- * surface instead of the page behind it.
+ * background fill read as a heavy opaque bar once scrolled). Nav content
+ * (everything but the logo and the filled CTA pill, which already carry
+ * their own contrast) is white with `mix-blend-mode: difference` — see
+ * `NavLink` for the full rationale — so it auto-inverts against whatever's
+ * actually behind the header, including `MobileNav`'s own solid light sheet
+ * once open, with no scroll-position or page-content tracking needed at all.
  *
  * Deliberately `position: fixed` with NO transform on itself (no
  * hide-on-scroll-down slide, no translate of any kind) — an earlier version
@@ -56,33 +51,21 @@ export function Header() {
     return () => mql.removeEventListener("change", onChange);
   }, []);
 
-  const tone: "default" | "inverted" = mobileOpen ? "default" : "inverted";
-
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent">
         <Container>
-          <div
-            className={cn(
-              "flex h-16 items-center justify-between",
-              // The drop-shadow (not a solid fill) is what keeps the always-
-              // light nav content readable over arbitrary page content —
-              // skipped while the mobile panel's own solid sheet is open,
-              // since dark-on-light needs no shadow crutch there.
-              !mobileOpen && "drop-shadow-[0_1px_3px_rgb(0_0_0_/_0.45)]",
-            )}
-          >
-            <Logo tone={tone} />
+          <div className="flex h-16 items-center justify-between">
+            <Logo />
             <div className="flex items-center gap-4 lg:gap-6">
-              <DesktopNav tone={tone} />
-              <SearchTrigger tone={tone} variant="full" />
-              <SearchTrigger tone={tone} variant="compact" />
-              <SavedTrigger tone={tone} />
+              <DesktopNav />
+              <SearchTrigger variant="full" />
+              <SearchTrigger variant="compact" />
+              <SavedTrigger />
               <MenuButton
                 ref={menuButtonRef}
                 open={mobileOpen}
                 onClick={() => setMobileOpen((v) => !v)}
-                tone={tone}
                 controlsId={mobileNavId}
               />
             </div>

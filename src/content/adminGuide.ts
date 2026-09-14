@@ -375,6 +375,27 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         summary: "The four static legal pages (Privacy Policy, Terms & Conditions, Property Disclaimer, Cookie Policy).",
         details: ["This is a fixed set of pages — you edit their content here, you can't add or delete a legal page."],
       },
+      {
+        label: "Founder Profile",
+        href: "/admin/content/founder",
+        permission: "content.view",
+        summary: "The owner/founder photo and bio shown on the public Founder page — a single profile, not a list.",
+        details: [
+          "Name, title, hero intro and bio are required; Founder Statement, Vision/Mission/Philosophy, Leadership Principles, Highlights and a photo Gallery are all optional and only appear on the public page when filled in.",
+          "There's one record for the whole site (like Settings) — Edit updates it in place rather than creating a new one.",
+        ],
+      },
+      {
+        label: "Our Story",
+        href: "/admin/content/story",
+        permission: "content.view",
+        summary: "The milestone timeline on the public About page — each entry is one dated chapter of the company's history.",
+        details: [
+          "Every entry needs a Year, an Icon, a Title and a short Summary (always shown on the public timeline); Details is optional longer text shown only behind that entry's \"Read More\" — leave it empty and that link simply won't appear.",
+          "Entries are ordered automatically by Year (oldest first) wherever they're added from — you don't drag or manually reorder them.",
+          "With zero entries, the public page falls back to a plain narrative paragraph instead of showing an empty timeline — add your first entry here to replace it.",
+        ],
+      },
     ],
   },
   {
@@ -412,8 +433,11 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         label: "Settings",
         href: "/admin/settings",
         permission: "settings.manage",
-        summary: "Company profile (name, contact info) and platform defaults (date format, time zone, low-stock threshold, reminder lead time).",
-        details: ["Also links to your personal Notification Preferences — control which alert categories and channels reach you."],
+        summary: "Company profile (name, contact info), platform defaults (date format, time zone, low-stock threshold, reminder lead time), and the public site's \"Our Impact\" stats.",
+        details: [
+          "The \"Public 'Our Impact' Stats\" section (Ongoing Developments, Development Area, Locations, Landowner Partnerships) feeds the stat row on the public About page directly — leave a field blank to show an honest \"—\" placeholder there instead of a fabricated zero.",
+          "Also links to your personal Notification Preferences — control which alert categories and channels reach you.",
+        ],
       },
       {
         label: "Users",

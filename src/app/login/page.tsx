@@ -34,7 +34,7 @@ export default async function LoginPage() {
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] w-full text-white/10"
         />
         <div className="relative">
-          <Logo tone="inverted" />
+          <Logo />
         </div>
         <div className="relative flex flex-col gap-6">
           <p className="text-label uppercase tracking-wide text-white/55">Platform Access</p>

@@ -66,6 +66,27 @@ export function OurStory({ milestones }: { milestones: CompanyMilestone[] }) {
             <Reveal delay={120} className="hidden lg:block">
               <div className="sticky top-32">
                 <GrowthPathMotif className="text-border-strong h-auto w-full" />
+
+                {/* Grounds the motif in the real data next to it instead of leaving
+                    it as unlabelled decoration — also what actually fills the
+                    column, since the graphic alone falls short of the timeline's
+                    height once there are more than a couple of entries. */}
+                <div className="border-border-strong mt-8 border-t pt-6">
+                  <p className="text-body text-fg-muted max-w-sm">
+                    A timeline built one real milestone at a time — not a marketing
+                    checkpoint added for the sake of one.
+                  </p>
+                  <div className="mt-6 flex gap-10">
+                    <div>
+                      <p className="text-h3 text-accent tabular-nums">{milestones.length}</p>
+                      <p className="text-label text-fg-subtle mt-1 uppercase">Chapters told</p>
+                    </div>
+                    <div>
+                      <p className="text-h3 text-accent tabular-nums">{milestones[0]?.year}</p>
+                      <p className="text-label text-fg-subtle mt-1 uppercase">Since</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Reveal>
           </div>

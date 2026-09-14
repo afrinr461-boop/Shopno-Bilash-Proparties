@@ -3,8 +3,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export interface LogoProps {
-  /** Kept for call-site compatibility — the image logo carries its own contrast, so no tone-specific styling is applied. */
-  tone?: "default" | "inverted";
   className?: string;
 }
 

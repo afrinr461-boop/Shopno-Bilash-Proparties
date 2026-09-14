@@ -3,22 +3,24 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useSavedIds } from "@/hooks/useSavedProperties";
-import { cn } from "@/lib/utils";
 
-export function SavedTrigger({ tone = "default" }: { tone?: "default" | "inverted" }) {
+/**
+ * Always white with `mix-blend-mode: difference` on the icon+hitbox only
+ * (see NavLink) — the count badge is deliberately excluded from that blend
+ * group (it's a plain sibling `<span>`, not wrapped by the blended element)
+ * so it keeps its own fixed accent color instead of inverting with
+ * whatever's behind the header.
+ */
+export function SavedTrigger() {
   const count = useSavedIds().length;
-  const inverted = tone === "inverted";
 
   return (
     <Link
       href="/saved"
       aria-label={count > 0 ? `Saved properties (${count})` : "Saved properties"}
-      className={cn(
-        "relative flex size-10 items-center justify-center rounded-md transition-colors",
-        inverted ? "text-white/90 hover:bg-white/10" : "text-fg-muted hover:bg-surface hover:text-fg",
-      )}
+      className="relative flex size-10 items-center justify-center rounded-md transition-colors hover:bg-white/10"
     >
-      <Heart aria-hidden className="size-5" />
+      <Heart aria-hidden style={{ mixBlendMode: "difference" }} className="size-5 text-white/90" />
       {count > 0 && (
         <span
           aria-hidden
