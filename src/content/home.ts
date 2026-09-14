@@ -83,28 +83,15 @@ export interface FeaturedProjectContent {
   image: { src: string; alt: string };
 }
 
-/**
- * ⚠ DEMO DATA below (featuredProject, stats) — populated at the user's
- * request so the site is browsable for visual QA (2026-09-06). Not real
- * business information. Set featuredProject back to `null` and stats
- * values back to `null` once real figures/projects exist, or replace them
- * with the real thing.
- */
-export const featuredProject: FeaturedProjectContent | null = {
-  name: "Meridian Residences",
-  location: "Gulshan 2, Dhaka",
-  category: "Residential",
-  description:
-    "A 14-storey residential tower designed around light, air and long-term livability — 48 apartments, now under construction.",
-  href: "/projects/meridian-residences",
-  image: { src: "/placeholder-image.png", alt: "Placeholder architectural image" },
-};
+/** No development is currently spotlighted — set to a real project once one exists (see FeaturedDevelopment's honest fallback for the null state). */
+export const featuredProject: FeaturedProjectContent | null = null;
 
+/** Not populated yet — each stat renders an honest "—" (never a fake number) until real figures exist. See StatCounter. */
 export const stats: Statistic[] = [
-  { label: "Completed Projects", value: 8, suffix: "+" },
-  { label: "Units Delivered", value: 320, suffix: "+" },
-  { label: "Years of Experience", value: 10 },
-  { label: "Landowner Partnerships", value: 5 },
+  { label: "Completed Projects", value: null },
+  { label: "Units Delivered", value: null },
+  { label: "Years of Experience", value: null },
+  { label: "Landowner Partnerships", value: null },
 ];
 
 export const trust = {
