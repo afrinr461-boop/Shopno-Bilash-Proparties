@@ -7,7 +7,16 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { Check, Mail, MapPin, Clock, Phone, MessageCircle } from "lucide-react";
-import { FacebookIcon, InstagramIcon, LinkedinIcon, PinterestIcon, TiktokIcon, YoutubeIcon } from "@/components/ui/SocialIcons";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  PinterestIcon,
+  ThreadsIcon,
+  TiktokIcon,
+  XIcon,
+  YoutubeIcon,
+} from "@/components/ui/SocialIcons";
 import { brandBlurb, footerGroups, footerHighlights, legalQuickLinks, statement } from "@/content/footer";
 import type { CompanySettings } from "@/types/settings";
 import { Logo } from "./Logo";
@@ -16,6 +25,8 @@ const SOCIAL_PLATFORMS = [
   { key: "socialInstagram", label: "Instagram", Icon: InstagramIcon },
   { key: "socialFacebook", label: "Facebook", Icon: FacebookIcon },
   { key: "socialTiktok", label: "TikTok", Icon: TiktokIcon },
+  { key: "socialX", label: "X", Icon: XIcon },
+  { key: "socialThreads", label: "Threads", Icon: ThreadsIcon },
   { key: "socialPinterest", label: "Pinterest", Icon: PinterestIcon },
   { key: "socialYoutube", label: "YouTube", Icon: YoutubeIcon },
   { key: "socialLinkedin", label: "LinkedIn", Icon: LinkedinIcon },

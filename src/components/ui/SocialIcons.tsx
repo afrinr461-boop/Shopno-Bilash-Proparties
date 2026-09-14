@@ -75,3 +75,21 @@ export function PinterestIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function XIcon(props: IconProps) {
+  return (
+    <svg {...base} aria-hidden {...props}>
+      <path d="M5 5l14 14" />
+      <path d="M19 5L5 19" />
+    </svg>
+  );
+}
+
+export function ThreadsIcon(props: IconProps) {
+  return (
+    <svg {...base} aria-hidden {...props}>
+      <path d="M12 3c-4 0-6.5 2.7-6.5 6.5v5C5.5 18.3 8 21 12 21s6.5-2.7 6.5-6.5c0-2.5-1.6-3.8-3.7-3.8-1.9 0-3.3 1-3.3 2.6 0 1.2.9 2 2.1 2 1.1 0 1.8-.6 2-1.5" />
+      <path d="M8.5 9c.3-1.3 1.4-2 3-2 2.2 0 3.5 1.3 3.8 3" />
+    </svg>
+  );
+}

@@ -73,6 +73,8 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
         <Input label="Instagram (optional)" name="socialInstagram" type="url" defaultValue={settings.socialInstagram} placeholder="https://instagram.com/…" />
         <Input label="Facebook (optional)" name="socialFacebook" type="url" defaultValue={settings.socialFacebook} placeholder="https://facebook.com/…" />
         <Input label="TikTok (optional)" name="socialTiktok" type="url" defaultValue={settings.socialTiktok} placeholder="https://tiktok.com/@…" />
+        <Input label="X (optional)" name="socialX" type="url" defaultValue={settings.socialX} placeholder="https://x.com/…" />
+        <Input label="Threads (optional)" name="socialThreads" type="url" defaultValue={settings.socialThreads} placeholder="https://threads.net/@…" />
         <Input label="Pinterest (optional)" name="socialPinterest" type="url" defaultValue={settings.socialPinterest} placeholder="https://pinterest.com/…" />
         <Input label="YouTube (optional)" name="socialYoutube" type="url" defaultValue={settings.socialYoutube} placeholder="https://youtube.com/@…" />
         <Input label="LinkedIn (optional)" name="socialLinkedin" type="url" defaultValue={settings.socialLinkedin} placeholder="https://linkedin.com/company/…" />

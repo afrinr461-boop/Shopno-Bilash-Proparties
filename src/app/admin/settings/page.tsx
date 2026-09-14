@@ -90,6 +90,8 @@ export default async function AdminSettingsPage() {
             <Fact label="Instagram" value={settings.socialInstagram ?? "—"} />
             <Fact label="Facebook" value={settings.socialFacebook ?? "—"} />
             <Fact label="TikTok" value={settings.socialTiktok ?? "—"} />
+            <Fact label="X" value={settings.socialX ?? "—"} />
+            <Fact label="Threads" value={settings.socialThreads ?? "—"} />
             <Fact label="Pinterest" value={settings.socialPinterest ?? "—"} />
             <Fact label="YouTube" value={settings.socialYoutube ?? "—"} />
             <Fact label="LinkedIn" value={settings.socialLinkedin ?? "—"} />

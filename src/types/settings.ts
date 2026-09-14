@@ -32,6 +32,8 @@ export interface CompanySettings extends AuditFields {
   socialPinterest?: string;
   socialYoutube?: string;
   socialLinkedin?: string;
+  socialX?: string;
+  socialThreads?: string;
   /** Prompt 9 §14 — configurable rather than hardcoded, consumed by `formatDate`-adjacent display logic where wired. */
   dateFormat?: string;
   timeZone?: string;

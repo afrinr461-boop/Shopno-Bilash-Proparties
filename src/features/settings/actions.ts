@@ -28,6 +28,8 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const socialInstagram = String(formData.get("socialInstagram") ?? "").trim();
   const socialFacebook = String(formData.get("socialFacebook") ?? "").trim();
   const socialTiktok = String(formData.get("socialTiktok") ?? "").trim();
+  const socialX = String(formData.get("socialX") ?? "").trim();
+  const socialThreads = String(formData.get("socialThreads") ?? "").trim();
   const socialPinterest = String(formData.get("socialPinterest") ?? "").trim();
   const socialYoutube = String(formData.get("socialYoutube") ?? "").trim();
   const socialLinkedin = String(formData.get("socialLinkedin") ?? "").trim();
@@ -65,6 +67,8 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
     socialInstagram: socialInstagram || undefined,
     socialFacebook: socialFacebook || undefined,
     socialTiktok: socialTiktok || undefined,
+    socialX: socialX || undefined,
+    socialThreads: socialThreads || undefined,
     socialPinterest: socialPinterest || undefined,
     socialYoutube: socialYoutube || undefined,
     socialLinkedin: socialLinkedin || undefined,
