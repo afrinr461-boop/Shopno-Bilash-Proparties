@@ -34,7 +34,7 @@ export default async function RootNotFound() {
   return (
     <HeaderVariantProvider>
       <SearchProvider>
-        <Header />
+        <Header settings={settings} />
         <PageContent>
           <NotFoundContent />
         </PageContent>

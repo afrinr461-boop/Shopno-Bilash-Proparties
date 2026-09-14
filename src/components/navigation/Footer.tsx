@@ -97,7 +97,7 @@ export function Footer({ settings }: { settings: CompanySettings | null }) {
         <Container>
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
             <Reveal>
-              <Logo />
+              <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} />
               <p className="text-body-sm text-fg-subtle mt-4 max-w-xs">{brandBlurb}</p>
               <ul className="mt-6 flex flex-col gap-3">
                 {footerHighlights.map((highlight) => (

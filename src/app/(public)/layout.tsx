@@ -30,7 +30,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <HeaderVariantProvider>
       <SearchProvider>
         <SmoothScroll />
-        <Header />
+        <Header settings={settings} />
         <PageContent>{children}</PageContent>
         <Footer settings={settings} />
         <SitePageLoader routeTitleData={{ projects, units, newsArticles }} />

@@ -11,6 +11,15 @@ export interface CompanySettings extends AuditFields {
   id: ID;
   legalName: string;
   displayName: string;
+  /**
+   * A custom uploaded logo, replacing the bundled `/logo.webp` everywhere
+   * the site shows a logo (public header/footer, login page, Admin
+   * sidebar, Owner Portal). Independent of `logoMode` — uploading an
+   * image doesn't switch to it automatically, the admin picks explicitly.
+   */
+  logo?: string;
+  /** Whether the logo mark actually shown is the uploaded/default image, or just the company name as text — for a company that doesn't have a finished logo image yet. Defaults to "image" (the original bundled logo) when unset, so nothing changes until this is touched. */
+  logoMode?: "image" | "name";
   address?: string;
   phone?: string;
   /** Digits only (with country code, e.g. "8801XXXXXXXXX") — the footer builds a `https://wa.me/<digits>` link from this directly, so anything typed here has non-digit characters stripped before use. Separate from `phone` since a business's call number and WhatsApp number are often different in Bangladesh. */

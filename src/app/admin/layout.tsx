@@ -5,6 +5,7 @@ import { PermissionDeniedState } from "@/components/feedback/PermissionDeniedSta
 import { Container } from "@/components/ui/Container";
 import { STAFF_ROLES } from "@/config/roles";
 import { getIncompleteNavHrefs } from "@/lib/adminCompleteness";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 
 /**
  * Admin / management platform shell (Layer C). Gated on both "is signed in"
@@ -26,10 +27,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     );
   }
 
-  const incompleteHrefs = await getIncompleteNavHrefs();
+  const [incompleteHrefs, settings] = await Promise.all([
+    getIncompleteNavHrefs(),
+    companySettingsRepository.findById(COMPANY_SETTINGS_ID),
+  ]);
 
   return (
-    <AdminShell user={user} incompleteHrefs={incompleteHrefs}>
+    <AdminShell user={user} incompleteHrefs={incompleteHrefs} settings={settings}>
       {children}
     </AdminShell>
   );

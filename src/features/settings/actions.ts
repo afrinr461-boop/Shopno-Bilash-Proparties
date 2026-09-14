@@ -6,9 +6,20 @@ import { getCurrentUser } from "@/lib/auth";
 import { hasPermission } from "@/lib/permissions";
 import { recordAuditEvent } from "@/features/audit/repository";
 import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
+import { saveUploadedFile, deleteUploadedFile } from "@/lib/fileStorage";
+import type { CompanySettings } from "@/types/settings";
 
 export interface SettingsFormState {
   error?: string;
+}
+
+function getUploadedFile(formData: FormData, field: string): File | null {
+  const file = formData.get(field);
+  return file instanceof File && file.size > 0 ? file : null;
+}
+
+function isLogoMode(value: string): value is NonNullable<CompanySettings["logoMode"]> {
+  return value === "image" || value === "name";
 }
 
 /** Prompt 9 §14 — the first edit path for `CompanySettings` (Admin Step 20 shipped it read-only). Still a singleton: no create/delete, just update the one real row. */
@@ -17,6 +28,7 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   if (!user) throw new Error("Not authenticated");
   if (!hasPermission(user.role, "settings.manage")) throw new Error("Forbidden");
 
+  const logoModeRaw = String(formData.get("logoMode") ?? "image").trim();
   const legalName = String(formData.get("legalName") ?? "").trim();
   const displayName = String(formData.get("displayName") ?? "").trim();
   const address = String(formData.get("address") ?? "").trim();
@@ -52,12 +64,29 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const impactLocations = impactLocationsRaw ? Number(impactLocationsRaw) : undefined;
   const impactLandownerPartnerships = impactLandownerPartnershipsRaw ? Number(impactLandownerPartnershipsRaw) : undefined;
 
+  if (!isLogoMode(logoModeRaw)) return { error: "Choose a valid logo display option." };
+
   const existing = await companySettingsRepository.findById(COMPANY_SETTINGS_ID);
   if (!existing) return { error: "Settings record is missing." };
+
+  const newLogo = getUploadedFile(formData, "logo");
+  let logo = existing.logo;
+  if (newLogo) {
+    let saved;
+    try {
+      saved = await saveUploadedFile(newLogo, "branding");
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Couldn't save that logo image." };
+    }
+    if (existing.logo) await deleteUploadedFile(existing.logo);
+    logo = saved.url;
+  }
 
   await companySettingsRepository.update(COMPANY_SETTINGS_ID, {
     legalName,
     displayName,
+    logo,
+    logoMode: logoModeRaw,
     address: address || undefined,
     phone: phone || undefined,
     whatsapp: whatsapp || undefined,
@@ -88,5 +117,12 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
 
   revalidatePath("/admin/settings");
   revalidatePath("/about");
+  // The logo (and hours/social links) show up on effectively every public
+  // route plus login/admin/portal — revalidating layout-level paths covers
+  // all of them, since Next.js revalidation cascades to a path's children.
+  revalidatePath("/", "layout");
+  revalidatePath("/login");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
   redirect("/admin/settings");
 }

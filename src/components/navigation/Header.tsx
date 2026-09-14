@@ -9,6 +9,7 @@ import { MenuButton } from "./MenuButton";
 import { MobileNav } from "./MobileNav";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { SavedTrigger } from "@/components/saved/SavedTrigger";
+import type { CompanySettings } from "@/types/settings";
 
 // Where along the header's own width to sample the page content behind it —
 // nearer the right edge, where the nav links/icons actually cluster (the
@@ -42,7 +43,7 @@ const SAMPLE_X_FROM_RIGHT = 100;
  * `pointer-events-none` elements, which is exactly how these dark scrims
  * are usually marked so they don't themselves block clicks.
  */
-export function Header() {
+export function Header({ settings }: { settings: CompanySettings | null }) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const [sampledTone, setSampledTone] = useState<"default" | "inverted">("default");
@@ -90,13 +91,22 @@ export function Header() {
       });
     }
 
-    sample();
+    // A plain synchronous `sample()` here can run a frame before the page's
+    // own layout (hero height, fonts, etc.) has actually settled — the geometry
+    // it reads is momentarily stale, so it under- or over-reports "dark" on the
+    // very first paint and then never self-corrects until something scrolls.
+    // Two rAFs reliably wait a full layout+paint cycle before that first read.
+    let initialRaf = requestAnimationFrame(() => {
+      initialRaf = requestAnimationFrame(sample);
+    });
+
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      cancelAnimationFrame(initialRaf);
     };
     // Re-sample on route change too — navigating can land the header over
     // completely different content at the same scroll position, and a
@@ -119,7 +129,7 @@ export function Header() {
       <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent">
         <Container>
           <div className="flex h-16 items-center justify-between">
-            <Logo />
+            <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} tone={tone} />
             <div className="flex items-center gap-4 lg:gap-6">
               <DesktopNav tone={tone} />
               <SearchTrigger tone={tone} variant="full" />

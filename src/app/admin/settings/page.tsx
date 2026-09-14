@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
@@ -64,6 +65,22 @@ export default async function AdminSettingsPage() {
         }
       />
       <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 lg:grid-cols-2">
+        <section className="border-border bg-surface-raised flex flex-col gap-4 rounded-lg border p-4">
+          <h2 className="text-label text-fg-subtle uppercase">Logo</h2>
+          <div className="flex items-center gap-4">
+            {settings.logoMode === "name" ? (
+              <div className="border-border bg-surface text-fg flex h-16 items-center rounded-lg border px-4 text-h4 font-semibold">
+                {settings.displayName}
+              </div>
+            ) : (
+              <div className="border-border bg-surface flex size-16 items-center justify-center rounded-lg border p-2">
+                <Image src={settings.logo ?? "/logo.webp"} alt="" width={200} height={200} className="h-full w-full object-contain" />
+              </div>
+            )}
+            <Fact label="Display Mode" value={settings.logoMode === "name" ? "Company Name" : "Image"} />
+          </div>
+        </section>
+
         <section className="border-border bg-surface-raised flex flex-col gap-4 rounded-lg border p-4">
           <h2 className="text-label text-fg-subtle uppercase">Company</h2>
           <div className="grid grid-cols-2 gap-4">

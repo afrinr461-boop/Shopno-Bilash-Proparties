@@ -5,6 +5,7 @@ import { STAFF_ROLES, getPortalHomePath } from "@/config/roles";
 import { ArchitecturalMotif } from "@/components/ui/ArchitecturalMotif";
 import { Logo } from "@/components/navigation/Logo";
 import { AuthTabs } from "@/components/auth/AuthTabs";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 
 const NAV_WORDS = ["Projects", "Properties", "Customers", "Finance"];
 
@@ -26,6 +27,8 @@ export default async function LoginPage() {
     redirect(STAFF_ROLES.includes(user.role) ? "/admin" : getPortalHomePath(user.role));
   }
 
+  const settings = await companySettingsRepository.findById(COMPANY_SETTINGS_ID);
+
   return (
     <main className="flex min-h-screen">
       <div className="bg-fg relative hidden overflow-hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between lg:p-12 xl:p-16">
@@ -34,7 +37,7 @@ export default async function LoginPage() {
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] w-full text-white/10"
         />
         <div className="relative">
-          <Logo />
+          <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} tone="inverted" />
         </div>
         <div className="relative flex flex-col gap-6">
           <p className="text-label uppercase tracking-wide text-white/55">Platform Access</p>
@@ -54,7 +57,7 @@ export default async function LoginPage() {
       <div className="flex flex-1 items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden">
-            <Logo />
+            <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} />
           </div>
           <p className="text-label text-fg-subtle mb-2 uppercase tracking-wide">Welcome back</p>
           <h2 className="text-h2 mb-1">Sign in</h2>

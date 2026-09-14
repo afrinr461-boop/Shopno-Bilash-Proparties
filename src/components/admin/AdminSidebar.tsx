@@ -1,12 +1,13 @@
-import Link from "next/link";
-import Image from "next/image";
 import { ADMIN_NAV_GROUPS } from "@/config/navigation";
 import type { RoleName } from "@/config/roles";
+import type { CompanySettings } from "@/types/settings";
 import { AdminSidebarNav } from "./AdminSidebarNav";
+import { Logo } from "@/components/navigation/Logo";
 
 export interface AdminSidebarProps {
   role: RoleName;
   incompleteHrefs: string[];
+  settings: CompanySettings | null;
 }
 
 /**
@@ -33,16 +34,22 @@ export interface AdminSidebarProps {
  * meant it scrolled out of view along with everything else instead of
  * staying reachable like a footer should.
  */
-export function AdminSidebar({ role, incompleteHrefs }: AdminSidebarProps) {
+export function AdminSidebar({ role, incompleteHrefs, settings }: AdminSidebarProps) {
   const scrollableGroups = ADMIN_NAV_GROUPS.filter((group) => group.label !== "Help");
   const helpGroup = ADMIN_NAV_GROUPS.filter((group) => group.label === "Help");
 
   return (
     <aside className="border-border bg-surface fixed inset-y-0 left-0 z-30 hidden h-screen w-64 flex-col border-r lg:flex">
-      <Link href="/admin" className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <Image src="/logo.webp" alt="" width={1477} height={1065} className="h-11 w-auto object-contain" />
+      <div className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <Logo
+          href="/admin"
+          src={settings?.logo}
+          mode={settings?.logoMode}
+          displayName={settings?.displayName}
+          className="h-11 sm:h-11"
+        />
         <span className="text-caption text-fg-subtle">Admin</span>
-      </Link>
+      </div>
 
       <div className="thin-scrollbar flex-1 overflow-y-auto px-3 py-4">
         <AdminSidebarNav groups={scrollableGroups} role={role} incompleteHrefs={incompleteHrefs} />

@@ -1,12 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import type { CompanySettings } from "@/types/settings";
 import type { SettingsFormState } from "@/features/settings/actions";
+
+const LOGO_MODE_OPTIONS = [
+  { value: "image", label: "Image (a logo file)" },
+  { value: "name", label: "Company Name (text only)" },
+];
 
 export interface SettingsFormProps {
   action: (state: SettingsFormState, formData: FormData) => Promise<SettingsFormState>;
@@ -34,7 +41,39 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
         </div>
       )}
 
-      <h2 className="text-label text-fg-subtle uppercase">Company</h2>
+      <h2 className="text-label text-fg-subtle uppercase">Logo</h2>
+      <p className="text-caption text-fg-subtle -mt-3">
+        Shown everywhere the site has a logo — header, footer, login page, Admin sidebar, Owner Portal.
+      </p>
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        {settings.logo && (
+          <div className="border-border bg-surface-raised flex size-20 shrink-0 items-center justify-center rounded-lg border p-2">
+            <Image src={settings.logo} alt="Current logo" width={200} height={200} className="h-full w-full object-contain" />
+          </div>
+        )}
+        <div className="flex flex-1 flex-col gap-5">
+          <Input
+            label="New Logo Image (optional)"
+            name="logo"
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            helperText={
+              settings.logo
+                ? "A transparent-background PNG or WEBP works best. Leave empty to keep the current logo."
+                : "A transparent-background PNG or WEBP works best, up to 15MB."
+            }
+          />
+          <Select
+            label="Logo Display"
+            name="logoMode"
+            options={LOGO_MODE_OPTIONS}
+            defaultValue={settings.logoMode ?? "image"}
+            helperText="Don't have a finished logo image yet? Switch this to “Company Name” and the site shows your name as text instead, everywhere a logo would go."
+          />
+        </div>
+      </div>
+
+      <h2 className="text-label text-fg-subtle mt-2 uppercase">Company</h2>
       <div className="grid gap-5 sm:grid-cols-2">
         <Input label="Legal Name" name="legalName" required defaultValue={settings.legalName} />
         <Input label="Display Name" name="displayName" required defaultValue={settings.displayName} />

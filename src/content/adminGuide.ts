@@ -446,8 +446,10 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         label: "Settings",
         href: "/admin/settings",
         permission: "settings.manage",
-        summary: "Company profile (name, contact info, hours, social media), platform defaults (date format, time zone, low-stock threshold, reminder lead time), and the public site's \"Our Impact\" stats.",
+        summary: "Company profile (logo, name, contact info, hours, social media), platform defaults (date format, time zone, low-stock threshold, reminder lead time), and the public site's \"Our Impact\" stats.",
         details: [
+          "The Logo section controls the logo shown everywhere on the whole platform — public header/footer, login page, Admin sidebar, and Owner Portal, all at once. Upload a new image any time to replace it (a transparent-background PNG/WEBP works best); the previous logo file is deleted automatically once replaced.",
+          "\"Logo Display\" is a separate choice from the uploaded file: set it to \"Company Name\" to show your company name as plain text everywhere instead of an image, for when you don't have a finished logo image ready yet — switch it back to \"Image\" once you do, no re-upload needed if a logo is already on file.",
           "Address/Phone/WhatsApp Number/Email/Website/Hours feed the public footer's \"Contact\" column directly — each one only appears there once you fill it in, nothing is ever shown as a placeholder. Phone, WhatsApp and Email are tap/click-to-contact links; WhatsApp specifically needs the country code with no spaces or symbols (e.g. 8801XXXXXXXXX) since it becomes a wa.me chat link.",
           "The Social Media URL fields (Instagram, Facebook, TikTok, X, Threads, Pinterest, YouTube, LinkedIn) each show an icon in the public footer's \"Follow\" column, but only for the platforms you actually fill in — leave one blank and its icon simply doesn't appear.",
           "The \"Public 'Our Impact' Stats\" section (Ongoing Developments, Development Area, Locations, Landowner Partnerships) feeds the stat row on the public About page directly — leave a field blank to show an honest \"—\" placeholder there instead of a fabricated zero.",

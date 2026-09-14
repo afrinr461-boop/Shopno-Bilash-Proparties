@@ -5,6 +5,7 @@ import { PortalShell } from "@/components/portal/PortalShell";
 import { PORTAL_NAV, SHAREHOLDER_NAV, LANDOWNER_NAV } from "@/config/navigation";
 import { resolveOwnerContext } from "@/lib/ownerContext";
 import { getOwnerNotifications } from "@/features/ownerPortal/queries";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 
 /**
  * Chapter 3 — the authenticated portal shell, covering customer,
@@ -25,9 +26,10 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   const ownerContext = resolveOwnerContext(user);
   const notifications = ownerContext ? await getOwnerNotifications(ownerContext.ownerType, ownerContext.ownerId) : [];
   const unreadCount = notifications.filter((n) => (n.status ?? (n.readAt ? "read" : "unread")) === "unread").length;
+  const settings = await companySettingsRepository.findById(COMPANY_SETTINGS_ID);
 
   return (
-    <PortalShell navItems={navItems} ownerName={user.name} unreadNotifications={unreadCount}>
+    <PortalShell navItems={navItems} ownerName={user.name} unreadNotifications={unreadCount} settings={settings}>
       {children}
     </PortalShell>
   );

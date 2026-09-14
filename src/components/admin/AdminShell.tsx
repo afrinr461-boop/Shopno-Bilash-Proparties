@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@/types/user";
+import type { CompanySettings } from "@/types/settings";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminMobileSidebar } from "./AdminMobileSidebar";
 import { AdminHeader } from "./AdminHeader";
@@ -12,6 +13,7 @@ export interface AdminShellProps {
   children: ReactNode;
   /** Hrefs of nav items missing data worth flagging — see `src/lib/adminCompleteness.ts`. */
   incompleteHrefs: string[];
+  settings: CompanySettings | null;
 }
 
 /**
@@ -29,12 +31,12 @@ export interface AdminShellProps {
  * `<main>` gets `pt-16` for the header's height instead, so nothing
  * renders underneath either.
  */
-export function AdminShell({ user, children, incompleteHrefs }: AdminShellProps) {
+export function AdminShell({ user, children, incompleteHrefs, settings }: AdminShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="bg-bg flex min-h-screen">
-      <AdminSidebar role={user.role} incompleteHrefs={incompleteHrefs} />
+      <AdminSidebar role={user.role} incompleteHrefs={incompleteHrefs} settings={settings} />
       <AdminMobileSidebar
         open={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}

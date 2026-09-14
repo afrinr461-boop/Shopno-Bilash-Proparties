@@ -9,11 +9,13 @@ import { PortalPageLoader } from "@/components/portal/PortalPageLoader";
 import { ArchitecturalMotif } from "@/components/ui/ArchitecturalMotif";
 import { logoutAction } from "@/lib/auth/actions";
 import type { OwnerNavItem } from "@/config/navigation";
+import type { CompanySettings } from "@/types/settings";
 
 export interface PortalShellProps {
   navItems: OwnerNavItem[];
   ownerName: string;
   unreadNotifications: number;
+  settings: CompanySettings | null;
   children: React.ReactNode;
 }
 
@@ -51,7 +53,7 @@ function initials(name: string): string {
  * champagne accent line under the logo — the portal's one deliberate
  * "private club" signature, used nowhere else so it stays special.
  */
-export function PortalShell({ navItems, ownerName, unreadNotifications, children }: PortalShellProps) {
+export function PortalShell({ navItems, ownerName, unreadNotifications, settings, children }: PortalShellProps) {
   const pathname = usePathname();
   const homeHref = navItems[0]?.href ?? "/portal";
   const notificationsItem = navItems.find((i) => i.label === "Notifications");
@@ -69,7 +71,7 @@ export function PortalShell({ navItems, ownerName, unreadNotifications, children
       {/* Desktop sidebar */}
       <aside className="border-border bg-gradient-to-b from-surface to-surface-raised sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r lg:flex">
         <div className="border-premium/40 flex h-20 shrink-0 items-center border-b px-6">
-          <Logo />
+          <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} />
         </div>
         <div className="px-4 pt-5">
           <div className="bg-accent-soft/60 flex items-center gap-3 rounded-xl px-4 py-4">
@@ -126,7 +128,7 @@ export function PortalShell({ navItems, ownerName, unreadNotifications, children
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile top bar */}
         <header className="border-border bg-bg/80 sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b px-4 backdrop-blur-md lg:hidden">
-          <Logo />
+          <Logo src={settings?.logo} mode={settings?.logoMode} displayName={settings?.displayName} />
           <div className="flex items-center gap-1">
             {notificationsItem && (
               <Link href={notificationsItem.href} aria-label="Notifications" className="text-fg-muted hover:text-fg hover:bg-surface-raised relative flex size-10 items-center justify-center rounded-full transition-colors">
