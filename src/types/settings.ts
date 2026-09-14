@@ -15,6 +15,21 @@ export interface CompanySettings extends AuditFields {
   phone?: string;
   email?: string;
   website?: string;
+  /** Free text since hours don't fit one fixed format (e.g. "Sat–Thu, 10am–7pm (GMT+6)") — shown in the footer's Contact column next to phone/email/address, hidden entirely while unset. */
+  hours?: string;
+  /**
+   * Social profile URLs — each optional and independent, same "never
+   * invent, never show a dead/placeholder link" rule as `socialLinks` in
+   * `content/footer.ts` used to enforce by staying empty: the footer's
+   * Follow column only ever renders an icon for a platform that actually
+   * has a URL set here.
+   */
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTiktok?: string;
+  socialPinterest?: string;
+  socialYoutube?: string;
+  socialLinkedin?: string;
   /** Prompt 9 §14 — configurable rather than hardcoded, consumed by `formatDate`-adjacent display logic where wired. */
   dateFormat?: string;
   timeZone?: string;

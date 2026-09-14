@@ -79,6 +79,19 @@ export default async function AdminSettingsPage() {
             <Fact label="Phone" value={settings.phone ?? "—"} />
             <Fact label="Email" value={settings.email ?? "—"} />
             <Fact label="Website" value={settings.website ?? "—"} />
+            <Fact label="Hours" value={settings.hours ?? "—"} />
+          </div>
+        </section>
+
+        <section className="border-border bg-surface-raised flex flex-col gap-4 rounded-lg border p-4">
+          <h2 className="text-label text-fg-subtle uppercase">Social Media</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <Fact label="Instagram" value={settings.socialInstagram ?? "—"} />
+            <Fact label="Facebook" value={settings.socialFacebook ?? "—"} />
+            <Fact label="TikTok" value={settings.socialTiktok ?? "—"} />
+            <Fact label="Pinterest" value={settings.socialPinterest ?? "—"} />
+            <Fact label="YouTube" value={settings.socialYoutube ?? "—"} />
+            <Fact label="LinkedIn" value={settings.socialLinkedin ?? "—"} />
           </div>
         </section>
 

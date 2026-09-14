@@ -9,6 +9,7 @@ import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { SearchProvider } from "@/components/search/SearchContext";
 import { SmoothScroll } from "@/components/navigation/SmoothScroll";
 import { getSiteNavDataAsync } from "@/lib/siteNavDataAsync";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 
 /**
  * Public marketing site shell: fixed Header, route content, Footer, and
@@ -20,7 +21,10 @@ import { getSiteNavDataAsync } from "@/lib/siteNavDataAsync";
  * itself.
  */
 export default async function PublicLayout({ children }: { children: ReactNode }) {
-  const { projects, units, listings, newsArticles } = await getSiteNavDataAsync();
+  const [{ projects, units, listings, newsArticles }, settings] = await Promise.all([
+    getSiteNavDataAsync(),
+    companySettingsRepository.findById(COMPANY_SETTINGS_ID),
+  ]);
 
   return (
     <HeaderVariantProvider>
@@ -28,7 +32,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         <SmoothScroll />
         <Header />
         <PageContent>{children}</PageContent>
-        <Footer />
+        <Footer settings={settings} />
         <SitePageLoader routeTitleData={{ projects, units, newsArticles }} />
         <SearchOverlay searchData={{ projects, listings, newsArticles }} />
         <CookieNotice />

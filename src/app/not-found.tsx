@@ -9,6 +9,7 @@ import { PageContent } from "@/components/navigation/PageContent";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { SearchProvider } from "@/components/search/SearchContext";
 import { getSiteNavDataAsync } from "@/lib/siteNavDataAsync";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
@@ -25,7 +26,10 @@ export const metadata: Metadata = {
  * including fetching the same live nav data for search/tab titles.
  */
 export default async function RootNotFound() {
-  const { projects, units, listings, newsArticles } = await getSiteNavDataAsync();
+  const [{ projects, units, listings, newsArticles }, settings] = await Promise.all([
+    getSiteNavDataAsync(),
+    companySettingsRepository.findById(COMPANY_SETTINGS_ID),
+  ]);
 
   return (
     <HeaderVariantProvider>
@@ -34,7 +38,7 @@ export default async function RootNotFound() {
         <PageContent>
           <NotFoundContent />
         </PageContent>
-        <Footer />
+        <Footer settings={settings} />
         <SitePageLoader routeTitleData={{ projects, units, newsArticles }} />
         <SearchOverlay searchData={{ projects, listings, newsArticles }} />
         <CookieNotice />

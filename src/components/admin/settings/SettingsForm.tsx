@@ -41,11 +41,34 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
       </div>
 
       <h2 className="text-label text-fg-subtle mt-2 uppercase">Contact</h2>
+      <p className="text-caption text-fg-subtle -mt-3">Shown in the public site&rsquo;s footer, under &ldquo;Contact&rdquo; — each field is hidden there individually while empty, nothing is ever shown as a placeholder.</p>
       <div className="grid gap-5 sm:grid-cols-2">
         <Input label="Address (optional)" name="address" defaultValue={settings.address} />
         <Input label="Phone (optional)" name="phone" defaultValue={settings.phone} />
         <Input label="Email (optional)" name="email" type="email" defaultValue={settings.email} />
         <Input label="Website (optional)" name="website" defaultValue={settings.website} />
+        <div className="sm:col-span-2">
+          <Input
+            label="Hours (optional)"
+            name="hours"
+            defaultValue={settings.hours}
+            placeholder="e.g. Sat–Thu, 10am–7pm (GMT+6)"
+          />
+        </div>
+      </div>
+
+      <h2 className="text-label text-fg-subtle mt-2 uppercase">Social Media</h2>
+      <p className="text-caption text-fg-subtle -mt-3">
+        Full profile URLs (e.g. https://instagram.com/yourpage). Shown as an icon in the public footer&rsquo;s &ldquo;Follow&rdquo;
+        column — only for the platforms you fill in here, never an invented or dead link.
+      </p>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Input label="Instagram (optional)" name="socialInstagram" type="url" defaultValue={settings.socialInstagram} placeholder="https://instagram.com/…" />
+        <Input label="Facebook (optional)" name="socialFacebook" type="url" defaultValue={settings.socialFacebook} placeholder="https://facebook.com/…" />
+        <Input label="TikTok (optional)" name="socialTiktok" type="url" defaultValue={settings.socialTiktok} placeholder="https://tiktok.com/@…" />
+        <Input label="Pinterest (optional)" name="socialPinterest" type="url" defaultValue={settings.socialPinterest} placeholder="https://pinterest.com/…" />
+        <Input label="YouTube (optional)" name="socialYoutube" type="url" defaultValue={settings.socialYoutube} placeholder="https://youtube.com/@…" />
+        <Input label="LinkedIn (optional)" name="socialLinkedin" type="url" defaultValue={settings.socialLinkedin} placeholder="https://linkedin.com/company/…" />
       </div>
 
       <h2 className="text-label text-fg-subtle mt-2 uppercase">Regional & Defaults</h2>

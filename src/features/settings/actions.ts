@@ -23,6 +23,13 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const phone = String(formData.get("phone") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const website = String(formData.get("website") ?? "").trim();
+  const hours = String(formData.get("hours") ?? "").trim();
+  const socialInstagram = String(formData.get("socialInstagram") ?? "").trim();
+  const socialFacebook = String(formData.get("socialFacebook") ?? "").trim();
+  const socialTiktok = String(formData.get("socialTiktok") ?? "").trim();
+  const socialPinterest = String(formData.get("socialPinterest") ?? "").trim();
+  const socialYoutube = String(formData.get("socialYoutube") ?? "").trim();
+  const socialLinkedin = String(formData.get("socialLinkedin") ?? "").trim();
   const dateFormat = String(formData.get("dateFormat") ?? "").trim();
   const timeZone = String(formData.get("timeZone") ?? "").trim();
   const defaultLowStockThresholdRaw = String(formData.get("defaultLowStockThreshold") ?? "").trim();
@@ -52,6 +59,13 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
     phone: phone || undefined,
     email: email || undefined,
     website: website || undefined,
+    hours: hours || undefined,
+    socialInstagram: socialInstagram || undefined,
+    socialFacebook: socialFacebook || undefined,
+    socialTiktok: socialTiktok || undefined,
+    socialPinterest: socialPinterest || undefined,
+    socialYoutube: socialYoutube || undefined,
+    socialLinkedin: socialLinkedin || undefined,
     dateFormat: dateFormat || undefined,
     timeZone: timeZone || undefined,
     defaultLowStockThreshold: Number.isFinite(defaultLowStockThreshold) ? defaultLowStockThreshold : undefined,

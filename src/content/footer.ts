@@ -61,19 +61,6 @@ export const footerGroups: FooterGroup[] = [
   },
 ];
 
-/**
- * Official social accounts — empty on purpose. No verified accounts exist
- * yet, and this footer will never link to an invented social profile. Add
- * entries here (and the icons will appear automatically) once real,
- * company-confirmed accounts exist.
- */
-export interface SocialLink {
-  label: string;
-  href: string;
-}
-
-export const socialLinks: SocialLink[] = [];
-
 /** Compact secondary links repeated next to the copyright line. */
 export const legalQuickLinks: FooterLink[] = [
   { label: "Privacy", href: "/privacy" },

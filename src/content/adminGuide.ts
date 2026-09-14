@@ -446,8 +446,10 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         label: "Settings",
         href: "/admin/settings",
         permission: "settings.manage",
-        summary: "Company profile (name, contact info), platform defaults (date format, time zone, low-stock threshold, reminder lead time), and the public site's \"Our Impact\" stats.",
+        summary: "Company profile (name, contact info, hours, social media), platform defaults (date format, time zone, low-stock threshold, reminder lead time), and the public site's \"Our Impact\" stats.",
         details: [
+          "Address/Phone/Email/Website/Hours feed the public footer's \"Contact\" column directly — each one only appears there once you fill it in, nothing is ever shown as a placeholder.",
+          "The six Social Media URL fields (Instagram, Facebook, TikTok, Pinterest, YouTube, LinkedIn) each show an icon in the public footer's \"Follow\" column, but only for the platforms you actually fill in — leave one blank and its icon simply doesn't appear.",
           "The \"Public 'Our Impact' Stats\" section (Ongoing Developments, Development Area, Locations, Landowner Partnerships) feeds the stat row on the public About page directly — leave a field blank to show an honest \"—\" placeholder there instead of a fabricated zero.",
           "Also links to your personal Notification Preferences — control which alert categories and channels reach you.",
         ],
