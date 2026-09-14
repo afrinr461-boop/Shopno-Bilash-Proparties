@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
   // for anything imported into a Server Component) breaks under Turbopack.
   // Keeping it external makes Next.js `require()` it at runtime instead.
   serverExternalPackages: ["@prisma/client"],
+  // Every real upload goes through `next/image` via `<Media>`, which
+  // refuses any external host by default — this one exception is for
+  // hotlinked Unsplash demo photography (free, real-estate stock images
+  // used to populate a sample project), not a general external-image
+  // allowlist.
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+  },
   // Default Server Action body limit is 1MB — too small for a scanned
   // deed or agreement PDF (see src/lib/fileStorage.ts's own 15MB cap).
   experimental: {
