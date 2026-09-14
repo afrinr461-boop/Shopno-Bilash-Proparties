@@ -51,6 +51,7 @@ export const footerGroups: FooterGroup[] = [
   {
     title: "Legal",
     links: [
+      { label: "Company Policy", href: "/policy" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/terms" },
       { label: "Property Disclaimer", href: "/disclaimer" },

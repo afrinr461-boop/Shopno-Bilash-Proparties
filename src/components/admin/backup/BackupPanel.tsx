@@ -1,0 +1,178 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { AlertTriangle, CheckCircle2, Download, ImageOff, Images, Loader2, UploadCloud } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { cn } from "@/lib/utils";
+
+const CONFIRM_PHRASE = "RESTORE";
+
+interface RestoreSummary {
+  tables: number;
+  rows: number;
+  files: number;
+  skippedTables: string[];
+}
+
+/**
+ * The full backup/restore control panel. Downloads are plain links (not
+ * fetch+blob) — a `Content-Disposition: attachment` response triggers the
+ * browser's native save flow on desktop and mobile alike, with no extra
+ * plumbing and no size limit imposed by holding the whole zip in JS memory
+ * twice. Restore is the one truly dangerous action here (it replaces the
+ * live database), so it's gated behind an explicit warning plus typing a
+ * confirmation phrase — the same "can't happen by accident" bar as
+ * deleting an account, not a plain confirm() dialog.
+ */
+export function BackupPanel() {
+  const [file, setFile] = useState<File | null>(null);
+  const [confirmText, setConfirmText] = useState("");
+  const [restoring, setRestoring] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; summary?: RestoreSummary; error?: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const canRestore = !!file && confirmText === CONFIRM_PHRASE && !restoring;
+
+  async function handleRestore() {
+    if (!file) return;
+    setRestoring(true);
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.set("backup", file);
+      const response = await fetch("/api/admin/backup/restore", { method: "POST", body: formData });
+      const body = await response.json();
+      if (!response.ok) {
+        setResult({ ok: false, error: body.error ?? "Restore failed for an unknown reason." });
+      } else {
+        setResult({ ok: true, summary: body.summary });
+        setFile(null);
+        setConfirmText("");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    } catch {
+      setResult({ ok: false, error: "Couldn't reach the server — check your connection and try again." });
+    } finally {
+      setRestoring(false);
+    }
+  }
+
+  return (
+    <div className="flex max-w-3xl flex-col gap-10">
+      <section className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-h3">Download a Backup</h2>
+          <p className="text-body-sm text-fg-muted mt-1">
+            Everything in the admin panel — every project, unit, sale, payment, expense, owner, document record,
+            plus all the public-site content you edit here (About/Our Story, Founder Profile, Company Policy,
+            News, Gallery captions, Settings). Saves straight to your device; nothing is kept on our server.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <a href="/api/admin/backup?mode=full" className="border-border-strong bg-surface-raised flex flex-col gap-3 rounded-lg border p-5">
+            <Images aria-hidden className="text-accent size-6" />
+            <div>
+              <p className="text-body font-semibold text-fg">Full Backup</p>
+              <p className="text-body-sm text-fg-muted mt-1">
+                All data, plus every uploaded photo and document. Larger file, takes longer — the complete picture.
+              </p>
+            </div>
+            <span className={cn(buttonVariants({ size: "sm" }), "mt-auto w-full")}>
+              <Download aria-hidden className="size-4" />
+              Download Full Backup
+            </span>
+          </a>
+
+          <a href="/api/admin/backup?mode=data" className="border-border-strong bg-surface-raised flex flex-col gap-3 rounded-lg border p-5">
+            <ImageOff aria-hidden className="text-fg-muted size-6" />
+            <div>
+              <p className="text-body font-semibold text-fg">Data Only</p>
+              <p className="text-body-sm text-fg-muted mt-1">
+                Every record and number, no images or documents. Small, fast — good for a quick, frequent backup.
+              </p>
+            </div>
+            <span className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-auto w-full")}>
+              <Download aria-hidden className="size-4" />
+              Download Data Only
+            </span>
+          </a>
+        </div>
+      </section>
+
+      <section className="border-border border-t pt-8">
+        <div className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-h3">Restore From a Backup</h2>
+            <p className="text-body-sm text-fg-muted mt-1">
+              Pick a backup .zip downloaded from this page — everything in it goes back to exactly where it came
+              from automatically, no manual sorting needed.
+            </p>
+          </div>
+
+          <div role="alert" className="bg-warning-soft text-warning flex items-start gap-2.5 rounded-md px-3.5 py-3">
+            <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" />
+            <p className="text-body-sm">
+              This <strong>replaces</strong> all current data with the backup&rsquo;s contents — anything added or
+              changed since that backup was taken will be lost. This can&rsquo;t be undone. If unsure, download a
+              fresh backup first.
+            </p>
+          </div>
+
+          <Input
+            ref={fileInputRef}
+            label="Backup File"
+            name="backup"
+            type="file"
+            accept=".zip"
+            onChange={(e) => {
+              setFile(e.target.files?.[0] ?? null);
+              setResult(null);
+            }}
+          />
+
+          <Input
+            label={`Type "${CONFIRM_PHRASE}" to confirm`}
+            name="confirm"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder={CONFIRM_PHRASE}
+            autoComplete="off"
+          />
+
+          {result && !result.ok && (
+            <div role="alert" className="bg-error-soft text-error flex items-start gap-2.5 rounded-md px-3.5 py-3">
+              <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" />
+              <p className="text-body-sm">{result.error}</p>
+            </div>
+          )}
+
+          {result?.ok && result.summary && (
+            <div role="status" className="bg-success-soft text-success flex items-start gap-2.5 rounded-md px-3.5 py-3">
+              <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0" />
+              <div className="text-body-sm">
+                <p>
+                  Restored {result.summary.tables} tables, {result.summary.rows.toLocaleString()} records
+                  {result.summary.files > 0 && `, ${result.summary.files.toLocaleString()} files`}.
+                </p>
+                {result.summary.skippedTables.length > 0 && (
+                  <p className="mt-1 opacity-80">
+                    Skipped (not part of this version): {result.summary.skippedTables.join(", ")}
+                  </p>
+                )}
+                <p className="mt-2 font-medium">Reload the page now to see the restored data.</p>
+              </div>
+            </div>
+          )}
+
+          <Button variant="destructive" disabled={!canRestore} onClick={handleRestore} className="w-fit">
+            {restoring ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <UploadCloud aria-hidden className="size-4" />}
+            {restoring ? "Restoring…" : "Restore Now"}
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}

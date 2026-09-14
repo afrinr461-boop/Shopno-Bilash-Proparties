@@ -377,3 +377,13 @@ model CompanyMilestone {
   id   String @id
   data Json
 }
+
+// The public Company Policy page — an ordered list of numbered "rules",
+// each a short rich-text (bold-only markdown) statement. Sorted by
+// creation order at read time, same reasoning as CompanyMilestone: no
+// stored order field to keep in sync, entries just land in the order
+// they were written.
+model PolicyRule {
+  id   String @id
+  data Json
+}

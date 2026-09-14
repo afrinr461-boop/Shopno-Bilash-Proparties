@@ -99,6 +99,13 @@ export default async function AdminSettingsPage() {
           <span className="text-body-sm text-fg">Notification Preferences — control which alerts reach you</span>
         </Link>
 
+        <Link
+          href="/admin/settings/backup"
+          className="border-border hover:border-fg-subtle group flex items-center justify-between rounded-lg border p-4 transition-colors lg:col-span-2"
+        >
+          <span className="text-body-sm text-fg">Backup & Restore — download or restore all system data</span>
+        </Link>
+
         <section>
           <h2 className="text-label text-fg-subtle mb-2 uppercase">Record</h2>
           <div className="grid grid-cols-2 gap-4">

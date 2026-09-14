@@ -92,7 +92,8 @@ export type PrismaJsonModel =
   | "ownershipTransfer"
   | "reminder"
   | "notificationPreference"
-  | "companyMilestone";
+  | "companyMilestone"
+  | "policyRule";
 
 /**
  * Backs a feature's `Repository<T>` with the real, on-disk SQLite database

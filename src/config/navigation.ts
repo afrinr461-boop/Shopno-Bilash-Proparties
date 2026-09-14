@@ -34,6 +34,8 @@ import {
   AlertTriangle,
   BookOpen,
   Milestone,
+  ScrollText,
+  DatabaseBackup,
 } from "lucide-react";
 import type { Permission } from "./permissions";
 
@@ -221,6 +223,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
       { label: "Pages", href: "/admin/content/pages", permission: "content.view", icon: FileStack },
       { label: "Founder Profile", href: "/admin/content/founder", permission: "content.view", icon: UserCog },
       { label: "Our Story", href: "/admin/content/story", permission: "content.view", icon: Milestone },
+      { label: "Company Policy", href: "/admin/content/policy", permission: "content.view", icon: ScrollText },
     ],
   },
   {
@@ -238,6 +241,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
       { label: "Users", href: "/admin/users", permission: "users.view", icon: Users },
       { label: "Roles / Permissions", href: "/admin/roles", permission: "roles.manage", icon: ShieldCheck },
       { label: "Audit Log", href: "/admin/audit", permission: "audit.view", icon: History },
+      { label: "Backup & Restore", href: "/admin/settings/backup", permission: "settings.manage", icon: DatabaseBackup },
     ],
   },
   {

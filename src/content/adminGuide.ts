@@ -396,6 +396,18 @@ export const ADMIN_GUIDE: GuideGroup[] = [
           "With zero entries, the public page falls back to a plain narrative paragraph instead of showing an empty timeline — add your first entry here to replace it.",
         ],
       },
+      {
+        label: "Company Policy",
+        href: "/admin/content/policy",
+        permission: "content.view",
+        summary: "Numbered company-policy rules shown on the public /policy page — separate from Pages' Privacy/Terms/Disclaimer/Cookie policies.",
+        details: [
+          "Each rule is just its text — \"Rule 1\", \"Rule 2\" etc. is generated automatically from each rule's position in the list, so you never type the number yourself.",
+          "Select text in the Rule Text box and press the Bold button (or type ** on both sides of a phrase) to make that specific phrase bold on the public page.",
+          "Rules always publish in the order you added them — to reorder, delete and re-add in the order you want.",
+          "With zero rules, the public page shows a brief \"not published yet\" placeholder instead of an empty page.",
+        ],
+      },
     ],
   },
   {
@@ -464,6 +476,18 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         details: [
           "Nothing here can ever be edited or deleted — this is the system's legal/compliance record, distinct from the friendlier Activity Feed.",
           "Filter by entity, project, or date range; every Entity ID is shortened for readability but the full ID is always available on hover.",
+        ],
+      },
+      {
+        label: "Backup & Restore",
+        href: "/admin/settings/backup",
+        permission: "settings.manage",
+        summary: "Download a full copy of everything in this system (or just the data, without images) to your own device, and restore from one if something ever goes wrong.",
+        details: [
+          "\"Full Backup\" includes every record plus every uploaded photo/document — the complete picture, larger file. \"Data Only\" is every record and number with no images — small and fast, good for a quick, frequent backup.",
+          "A backup covers everything: projects, units, sales, payments, expenses, owners, documents, and every piece of public-site content editable from this admin panel (Our Story, Founder Profile, Company Policy, News, Gallery, Settings, all of it).",
+          "Restoring replaces ALL current data with the backup's contents — anything added or changed since that backup was taken is lost, and this can't be undone. It requires typing a confirmation phrase on purpose, so it can never happen by a stray click.",
+          "A restored backup's files go back to exactly the same place they came from automatically — there's nothing to sort or place by hand.",
         ],
       },
     ],
