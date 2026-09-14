@@ -32,7 +32,7 @@
 // existing — nothing else in this schema or the app changes.
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
