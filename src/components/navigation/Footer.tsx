@@ -36,7 +36,7 @@ export function Footer() {
   return (
     <footer>
       {showStatementBand && (
-        <section className="bg-fg relative overflow-hidden py-20 sm:py-28 lg:py-32">
+        <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-20 sm:py-28 lg:py-32">
           <TrustEmblem
             fit="cover"
             className="pointer-events-none absolute inset-x-0 top-1/2 hidden h-[72%] w-full -translate-y-1/2 text-white/10 sm:block"

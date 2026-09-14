@@ -21,7 +21,7 @@ export function FounderStatement({ profile }: FounderStatementProps) {
   if (!profile.statement) return null;
 
   return (
-    <section className="bg-fg relative overflow-hidden py-24 sm:py-32">
+    <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-24 sm:py-32">
       {profile.photo && (
         <>
           <Media

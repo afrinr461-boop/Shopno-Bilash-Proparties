@@ -17,7 +17,7 @@ export function ProjectHero({ project }: { project: Project }) {
   usePageHeaderVariant("overlay");
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col overflow-hidden">
+    <section data-header-tone="dark" className="relative flex min-h-[100svh] flex-col overflow-hidden">
       <Media
         ratio="auto"
         src={project.coverImage.src}

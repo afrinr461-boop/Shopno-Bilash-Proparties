@@ -13,7 +13,10 @@ export function PartnershipHero() {
   usePageHeaderVariant("overlay");
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)] pt-32 pb-20 sm:pb-24 md:justify-center lg:justify-end">
+    <section
+      data-header-tone="dark"
+      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)] pt-32 pb-20 sm:pb-24 md:justify-center lg:justify-end"
+    >
       <ArchitecturalMotif
         fit="cover"
         className="pointer-events-none absolute inset-0 hidden h-full w-full text-white/10 sm:block"

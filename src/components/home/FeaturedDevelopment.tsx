@@ -19,7 +19,7 @@ import { featuredProject } from "@/content/home";
  */
 export function FeaturedDevelopment() {
   return (
-    <section className="bg-fg relative overflow-hidden py-24 sm:py-32 lg:py-40">
+    <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-24 sm:py-32 lg:py-40">
       <svg
         aria-hidden
         className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-[0.06] sm:block"

@@ -19,7 +19,10 @@ export function Hero() {
   usePageHeaderVariant("overlay");
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)]">
+    <section
+      data-header-tone="dark"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)]"
+    >
       {/*
         Placeholder for hero photography. No real project imagery exists
         yet — this abstract skyline-suggestive line motif stands in for it

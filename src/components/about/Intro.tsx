@@ -20,7 +20,10 @@ export function Intro() {
   usePageHeaderVariant("overlay");
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)]">
+    <section
+      data-header-tone="dark"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(160deg,var(--color-accent-strong),var(--color-fg)_120%)]"
+    >
       <svg
         aria-hidden
         className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-[0.08] sm:block"

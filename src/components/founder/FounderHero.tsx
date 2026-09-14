@@ -32,6 +32,7 @@ export function FounderHero({ profile }: FounderHeroProps) {
     <section className="bg-bg relative overflow-hidden lg:flex lg:min-h-[100svh] lg:flex-row-reverse">
       <div
         aria-hidden
+        data-header-tone="dark"
         className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-28 bg-gradient-to-b from-black/55 to-transparent lg:h-36"
       />
 

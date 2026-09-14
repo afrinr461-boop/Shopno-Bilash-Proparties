@@ -9,7 +9,7 @@ import type { Project } from "@/content/projects";
 /** Cinematic closing — connects the construction story back to the project and, when units exist, straight to the property experience (brief §9/§10). */
 export function ConstructionClosingCTA({ project, hasUnits }: { project: Project; hasUnits: boolean }) {
   return (
-    <section className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
+    <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
       <SkylineBars className="pointer-events-none absolute inset-0 hidden h-full w-full text-white/10 sm:block" />
       <Container className="relative">
         <Reveal as="p" className="text-label mb-6 text-white/60 uppercase">

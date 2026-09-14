@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 /** Same dark closing-beat family as <ProjectEnquiryCTA>/<UnitEnquiryCTA> — the generic "didn't find the right unit" case, without a specific property in context. */
 export function PropertiesEnquiryCTA() {
   return (
-    <section className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
+    <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
       <SkylineBars className="pointer-events-none absolute inset-0 hidden h-full w-full text-white/10 sm:block" />
       <Container className="relative">
         <Reveal as="p" className="text-label mb-6 text-white/60 uppercase">

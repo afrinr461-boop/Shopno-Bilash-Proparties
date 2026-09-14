@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { DesktopNav } from "./DesktopNav";
 import { Logo } from "./Logo";
@@ -9,29 +10,48 @@ import { MobileNav } from "./MobileNav";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { SavedTrigger } from "@/components/saved/SavedTrigger";
 
+// Where along the header's own width to sample the page content behind it —
+// nearer the right edge, where the nav links/icons actually cluster (the
+// logo doesn't need this: it carries its own contrast already, and the CTA
+// pill has its own solid fill regardless of tone).
+const SAMPLE_X_FROM_RIGHT = 100;
+
 /**
  * Global site header — permanently transparent, on every page and at every
- * scroll position (no solid/frosted fill, per explicit feedback that a
- * background fill read as a heavy opaque bar once scrolled). Nav content
- * (everything but the logo and the filled CTA pill, which already carry
- * their own contrast) is white with `mix-blend-mode: difference` — see
- * `NavLink` for the full rationale — so it auto-inverts against whatever's
- * actually behind the header, including `MobileNav`'s own solid light sheet
- * once open, with no scroll-position or page-content tracking needed at all.
+ * scroll position (no solid/frosted fill; that read as a heavy opaque bar
+ * once scrolled). Nav content switches between a dark-on-light "default"
+ * tone and a light-on-dark "inverted" tone depending on what's actually
+ * scrolled underneath it right now, detected live rather than assumed:
  *
- * Deliberately `position: fixed` with NO transform on itself (no
- * hide-on-scroll-down slide, no translate of any kind) — an earlier version
- * toggled `-translate-y-full`/`translate-y-0` to tuck the header away on a
- * sustained downward scroll, but a fixed element with its own animated
- * transform is a real, reproducible compositor bug on this stack: the
- * header's painted layer detaches from its actual position and renders
- * stale, torn, or overlapping page content when scrolling — worse, the
- * detachment could show up as the header appearing to slide into the
- * middle of the page instead of scrolling away cleanly. The header simply
- * stays put at the top.
+ * `mix-blend-mode: difference` was tried first (auto-invert with zero
+ * tracking) but doesn't actually work for this — a `position: fixed`
+ * header is always its own stacking context, so a blend mode set on its
+ * children can only ever see OTHER content painted inside that same fixed
+ * box, never the page scrolling behind it. The text just stayed a flat,
+ * unchanging white no matter what was underneath.
+ *
+ * So instead: any page section that's genuinely dark (hero imagery, the
+ * footer's dark band, a closing dark CTA, etc.) is marked with
+ * `data-header-tone="dark"` on its own outermost element — including a
+ * dark element that's only PART of a section (e.g. `FounderHero`'s top
+ * scrim), since this checks actual element bounds, not "is this page/
+ * section dark" as a whole. On every scroll (rAF-throttled) this checks
+ * whether any dark-marked element's current bounding rect covers a fixed
+ * point just inside the header's own band. Geometry, not hit-testing
+ * (`elementFromPoint`) — deliberately: hit-testing silently skips
+ * `pointer-events-none` elements, which is exactly how these dark scrims
+ * are usually marked so they don't themselves block clicks.
  */
 export function Header() {
+  const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+  const [sampledTone, setSampledTone] = useState<"default" | "inverted">("default");
   const [mobileOpen, setMobileOpen] = useState(false);
+  // MobileNav is its own solid light sheet drawn above everything once
+  // open — geometry-only dark detection below can't "see" that it's
+  // occluding whatever dark section happens to be at the same scroll
+  // position, so this case overrides the sampled value directly instead.
+  const tone = mobileOpen ? "default" : sampledTone;
   const mobileNavId = useId();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -39,6 +59,49 @@ export function Header() {
     setMobileOpen(false);
     menuButtonRef.current?.focus();
   }
+
+  useEffect(() => {
+    if (mobileOpen) return;
+
+    let raf = 0;
+
+    function sample() {
+      const header = headerRef.current;
+      if (!header) return;
+      const x = Math.max(0, window.innerWidth - SAMPLE_X_FROM_RIGHT);
+      const y = header.getBoundingClientRect().height / 2;
+
+      let dark = false;
+      for (const el of document.querySelectorAll<HTMLElement>('[data-header-tone="dark"]')) {
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+          dark = true;
+          break;
+        }
+      }
+      setSampledTone(dark ? "inverted" : "default");
+    }
+
+    function onScroll() {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        sample();
+        raf = 0;
+      });
+    }
+
+    sample();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+    // Re-sample on route change too — navigating can land the header over
+    // completely different content at the same scroll position, and a
+    // client-side transition doesn't reliably fire a native "scroll" event.
+  }, [pathname, mobileOpen]);
 
   // Close the mobile panel automatically if the viewport grows past the
   // mobile breakpoint (e.g. rotating a tablet) so it can't get stuck open.
@@ -53,19 +116,20 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent">
+      <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Logo />
             <div className="flex items-center gap-4 lg:gap-6">
-              <DesktopNav />
-              <SearchTrigger variant="full" />
-              <SearchTrigger variant="compact" />
-              <SavedTrigger />
+              <DesktopNav tone={tone} />
+              <SearchTrigger tone={tone} variant="full" />
+              <SearchTrigger tone={tone} variant="compact" />
+              <SavedTrigger tone={tone} />
               <MenuButton
                 ref={menuButtonRef}
                 open={mobileOpen}
                 onClick={() => setMobileOpen((v) => !v)}
+                tone={tone}
                 controlsId={mobileNavId}
               />
             </div>

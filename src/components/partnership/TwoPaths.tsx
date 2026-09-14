@@ -32,7 +32,11 @@ export function TwoPaths() {
         </Link>
       </Reveal>
 
-      <Reveal delay={100} className="bg-fg relative overflow-hidden border-b-2 border-white/15 text-white">
+      <Reveal
+        delay={100}
+        data-header-tone="dark"
+        className="bg-fg relative overflow-hidden border-b-2 border-white/15 text-white"
+      >
         <ArchitecturalMotif
           fit="cover"
           className="pointer-events-none absolute inset-x-0 top-1/2 hidden h-[72%] w-full -translate-y-1/2 text-white/10 sm:block"

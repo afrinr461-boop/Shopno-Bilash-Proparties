@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 /** Every catalog/index page ends with a real next step (brief §18) — Gallery's is the projects behind the images. */
 export function GalleryClosingCTA() {
   return (
-    <section className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
+    <section data-header-tone="dark" className="bg-fg relative overflow-hidden py-24 text-center sm:py-32 lg:py-40">
       <SkylineBars className="pointer-events-none absolute inset-0 hidden h-full w-full text-white/10 sm:block" />
       <Container className="relative">
         <Reveal delay={80}>
