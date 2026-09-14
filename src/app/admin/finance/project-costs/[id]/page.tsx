@@ -108,13 +108,23 @@ export default async function AdminProjectBudgetDetailPage({ params }: PageProps
           <h2 className="text-label text-fg-subtle uppercase">Budget</h2>
           <div className="grid grid-cols-3 gap-4">
             <Fact label="Budgeted" value={formatBDT(budget.budgeted.amount)} />
-            <Fact label="Actual" value={formatBDT(budget.actual.amount)} />
+            <Fact label="Actual (Manual)" value={formatBDT(budget.actual.amount)} />
             <Fact
               label="Variance"
               value={`${over ? "+" : ""}${formatBDT(variance)}`}
               tone={over ? "error" : "success"}
             />
           </div>
+          {project && (
+            <p className="text-caption text-fg-subtle">
+              &quot;Actual&quot; here is typed by hand, not calculated — for the live number from real Purchases, Expenses, and
+              Contractor Payments, see{" "}
+              <Link href={`/admin/projects/${project.id}/reports`} className="text-accent hover:text-accent-strong transition-colors">
+                this project&apos;s Reports
+              </Link>
+              .
+            </p>
+          )}
         </section>
 
         <section>

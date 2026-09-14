@@ -2,6 +2,7 @@ import type { ConstructionPhase, ConstructionTask, Milestone, ProgressTrackingMe
 import type { Purchase } from "@/types/procurement";
 import type { ProjectExpense } from "@/types/finance/project";
 import type { ContractorPayment } from "@/types/contractor";
+import { countsTowardActualCost } from "@/lib/transactionStatus";
 
 /**
  * The effective progress for a phase, given its `trackingMethod`. "manual"
@@ -133,8 +134,12 @@ export function computePhaseActualCost(
   const materialCost = purchases
     .filter((p) => p.constructionPhaseId === phase.id && p.status !== "cancelled")
     .reduce((s, p) => s + p.total.amount, 0);
-  const expenseCost = expenses.filter((e) => e.constructionPhaseId === phase.id).reduce((s, e) => s + e.amount.amount, 0);
-  const contractorCost = payments.filter((p) => p.phaseId === phase.id).reduce((s, p) => s + p.amount.amount, 0);
+  const expenseCost = expenses
+    .filter((e) => e.constructionPhaseId === phase.id && countsTowardActualCost(e.status))
+    .reduce((s, e) => s + e.amount.amount, 0);
+  const contractorCost = payments
+    .filter((p) => p.phaseId === phase.id && countsTowardActualCost(p.status))
+    .reduce((s, p) => s + p.amount.amount, 0);
   const actualCost = materialCost + expenseCost + contractorCost;
   const estimatedCost = phase.estimatedCost?.amount ?? 0;
 

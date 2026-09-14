@@ -1,6 +1,7 @@
 import type { Purchase } from "@/types/procurement";
 import type { ProjectExpense, ProjectBudget } from "@/types/finance/project";
 import type { ContractorPayment } from "@/types/contractor";
+import { countsTowardActualCost } from "@/lib/transactionStatus";
 
 export interface ProjectCostSummary {
   materialCost: number;
@@ -29,8 +30,8 @@ export function computeProjectActualCost(
   budgets: ProjectBudget[],
 ): ProjectCostSummary {
   const materialCost = purchases.filter((p) => p.status !== "cancelled").reduce((s, p) => s + p.total.amount, 0);
-  const otherExpenseCost = expenses.reduce((s, e) => s + e.amount.amount, 0);
-  const contractorCost = payments.reduce((s, p) => s + p.amount.amount, 0);
+  const otherExpenseCost = expenses.filter((e) => countsTowardActualCost(e.status)).reduce((s, e) => s + e.amount.amount, 0);
+  const contractorCost = payments.filter((p) => countsTowardActualCost(p.status)).reduce((s, p) => s + p.amount.amount, 0);
   const actualCost = materialCost + otherExpenseCost + contractorCost;
 
   const budgeted = budgets.reduce((s, b) => s + b.budgeted.amount, 0);

@@ -60,7 +60,12 @@ export async function getOwnerContributionsReport(user: User, projectId?: string
     if (!allocation) continue;
 
     const state = computeContributionState(contribution, allocation, adjustmentsByContribution.get(contribution.id) ?? []);
-    totalPayable += contribution.payableAmount.amount;
+    // effectivePayable (payableAmount + adjustments), not the raw
+    // payableAmount — otherwise this total doesn't reconcile with
+    // totalOutstanding below, which already includes adjustments via
+    // `state.outstanding`, and overstates what owners actually owe
+    // whenever a waiver/discount/correction has been recorded.
+    totalPayable += state.effectivePayable;
     totalPaid += contribution.paidAmount.amount;
     totalOutstanding += state.outstanding;
     totalFines += state.fineAmount;

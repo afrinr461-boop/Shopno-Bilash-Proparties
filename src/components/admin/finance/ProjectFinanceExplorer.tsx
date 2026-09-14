@@ -77,7 +77,7 @@ export function ProjectFinanceExplorer({ budgets, projects, canCreate, canDelete
       },
     },
     { key: "budgeted", header: "Budgeted", render: (b) => formatBDT(b.budgeted.amount), align: "right" },
-    { key: "actual", header: "Actual", render: (b) => formatBDT(b.actual.amount), align: "right" },
+    { key: "actual", header: "Actual (Manual)", render: (b) => formatBDT(b.actual.amount), align: "right" },
     {
       key: "variance",
       header: "Variance",

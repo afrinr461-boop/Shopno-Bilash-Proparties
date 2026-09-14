@@ -9,6 +9,7 @@ import { purchaseRepository } from "@/features/procurement/repository";
 import { leadRepository } from "@/features/crm/repository";
 import { documentRepository } from "@/features/documents/repository";
 import { canAccessProjectOptional, filterToVisibleProjects, filterVisibleProjectsList } from "@/lib/projectScope";
+import { countsTowardActualCost } from "@/lib/transactionStatus";
 import type { User } from "@/types/user";
 
 export interface ReportsSummary {
@@ -59,12 +60,19 @@ export async function getReportsSummary(user: User): Promise<ReportsSummary> {
   const projects = filterVisibleProjectsList(user, allProjects);
   const units = filterToVisibleProjects(user, allUnits);
   const visibleUnitIds = new Set(units.map((u) => u.id));
-  const sales = allSales.filter((s) => visibleUnitIds.has(s.unitId));
+  // Cancelled sales and non-final expenses/contractor payments are real
+  // records worth keeping, but must never inflate a live total — a
+  // cancelled sale isn't real revenue, and a draft/pending/rejected
+  // transaction hasn't been confirmed as real money spent yet. Same rule
+  // `dashboardData.ts`/`projectFinance.ts`/`constructionProgress.ts` apply.
+  const sales = allSales.filter((s) => visibleUnitIds.has(s.unitId) && s.status !== "cancelled");
   const payments = allPayments.filter((p) => canAccessProjectOptional(user, p.projectId));
-  const expenses = filterToVisibleProjects(user, allExpenses);
+  const expenses = filterToVisibleProjects(user, allExpenses).filter((e) => countsTowardActualCost(e.status));
   const phases = filterToVisibleProjects(user, allPhases);
   const leads = allLeads.filter((l) => canAccessProjectOptional(user, l.interestedProjectId));
-  const contractorPayments = allContractorPayments.filter((p) => canAccessProjectOptional(user, p.projectId));
+  const contractorPayments = allContractorPayments
+    .filter((p) => canAccessProjectOptional(user, p.projectId))
+    .filter((p) => countsTowardActualCost(p.status));
   const purchases = filterToVisibleProjects(user, allPurchases).filter((p) => p.status !== "cancelled");
   const budgets = filterToVisibleProjects(user, allBudgets);
 

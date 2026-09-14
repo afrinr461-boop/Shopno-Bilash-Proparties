@@ -90,7 +90,10 @@ export default async function ProjectOwnersPage({ params }: PageProps) {
           const state = computeContributionState(contribution, allocation, ownAdjustments);
           const key = `${contribution.ownerType}:${contribution.ownerId}`;
           const existing = financialByOwner.get(key) ?? { payable: 0, paid: 0, outstanding: 0, fine: 0, drilldown: [] };
-          existing.payable += contribution.payableAmount.amount;
+          // effectivePayable (includes adjustments), matching `outstanding`
+          // below — otherwise Payable - Paid stops equaling Outstanding
+          // whenever this owner has a waiver/discount/correction on file.
+          existing.payable += state.effectivePayable;
           existing.paid += contribution.paidAmount.amount;
           existing.outstanding += state.outstanding;
           existing.fine += state.fineAmount;

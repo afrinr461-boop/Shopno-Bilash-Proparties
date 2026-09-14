@@ -66,7 +66,14 @@ export function ProjectBudgetForm({ action, budget, projects, phases, submitLabe
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Input label="Budgeted (BDT)" name="budgeted" type="number" required defaultValue={budget?.budgeted.amount} />
-        <Input label="Actual (BDT)" name="actual" type="number" required defaultValue={budget?.actual.amount ?? 0} />
+        <Input
+          label="Actual — Manual Entry (BDT)"
+          name="actual"
+          type="number"
+          required
+          defaultValue={budget?.actual.amount ?? 0}
+          helperText="Typed by you, not calculated. The real live actual cost (from Purchases, Expenses, and Contractor Payments) is on the project's Reports tab — update this to match if they should agree."
+        />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
