@@ -62,6 +62,10 @@ export interface Project {
   availableUnits?: number;
   /** e.g. ["2 Bed", "3 Bed", "Duplex"] — for the availability preview only, not a full unit explorer (Step 10). */
   unitTypes?: string[];
+  totalParkingCar?: number;
+  availableParkingCar?: number;
+  totalParkingBike?: number;
+  availableParkingBike?: number;
   area?: string;
   floors?: number;
   buildingType?: string;

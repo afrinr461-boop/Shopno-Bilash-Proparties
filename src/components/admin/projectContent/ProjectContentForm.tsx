@@ -113,6 +113,18 @@ export function ProjectContentForm({ action, project, submitLabel }: ProjectCont
         <Input label="Available Units" name="availableUnits" type="number" defaultValue={project?.availableUnits} />
       </div>
 
+      <div className="grid gap-5 sm:grid-cols-4">
+        <Input label="Total Car Parking" name="totalParkingCar" type="number" defaultValue={project?.totalParkingCar} />
+        <Input label="Available Car Parking" name="availableParkingCar" type="number" defaultValue={project?.availableParkingCar} />
+        <Input label="Total Bike Parking" name="totalParkingBike" type="number" defaultValue={project?.totalParkingBike} />
+        <Input
+          label="Available Bike Parking"
+          name="availableParkingBike"
+          type="number"
+          defaultValue={project?.availableParkingBike}
+        />
+      </div>
+
       <div className="grid gap-5 sm:grid-cols-3">
         <Input label="Land Area" name="area" defaultValue={project?.area} placeholder="e.g. 1.2 acres" />
         <Input label="Floors" name="floors" type="number" defaultValue={project?.floors} />

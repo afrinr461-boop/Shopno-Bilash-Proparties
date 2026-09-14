@@ -10,7 +10,8 @@ import { IconButton } from "@/components/ui/IconButton";
 import { buttonVariants } from "@/components/ui/Button";
 import { deleteParking } from "@/features/parking/actions";
 import { cn } from "@/lib/utils";
-import type { Parking, ParkingStatus } from "@/types/parking";
+import { PARKING_TYPE_MAP } from "@/lib/parkingTypeIcons";
+import type { Parking, ParkingStatus, ParkingType } from "@/types/parking";
 import type { Project } from "@/types/project";
 
 export interface ParkingRow extends Parking {
@@ -33,9 +34,15 @@ const STATUS_OPTIONS: { value: ParkingStatus | "all"; label: string }[] = [
   { value: "unavailable", label: "Unavailable" },
 ];
 
+const TYPE_OPTIONS: { value: ParkingType | "all"; label: string }[] = [
+  { value: "all", label: "All types" },
+  ...(Object.keys(PARKING_TYPE_MAP) as ParkingType[]).map((value) => ({ value, label: PARKING_TYPE_MAP[value].label })),
+];
+
 export function ParkingAdminExplorer({ parkingSpaces, projects, canCreate, canDelete, initialProjectId }: ParkingAdminExplorerProps) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<ParkingStatus | "all">("all");
+  const [type, setType] = useState<ParkingType | "all">("all");
   const [projectId, setProjectId] = useState<string | "all">(initialProjectId ?? "all");
   const [isPending, startTransition] = useTransition();
 
@@ -52,12 +59,13 @@ export function ParkingAdminExplorer({ parkingSpaces, projects, canCreate, canDe
     const query = search.trim().toLowerCase();
     return parkingSpaces.filter((p) => {
       const matchesStatus = status === "all" || p.status === status;
+      const matchesType = type === "all" || p.type === type;
       const matchesProject = projectId === "all" || p.projectId === projectId;
       const matchesSearch =
         !query || p.parkingNumber.toLowerCase().includes(query) || (p.ownerLabel?.toLowerCase().includes(query) ?? false);
-      return matchesStatus && matchesProject && matchesSearch;
+      return matchesStatus && matchesType && matchesProject && matchesSearch;
     });
-  }, [parkingSpaces, search, status, projectId]);
+  }, [parkingSpaces, search, status, type, projectId]);
 
   const columns: DataTableColumn<ParkingRow>[] = [
     {
@@ -84,6 +92,20 @@ export function ParkingAdminExplorer({ parkingSpaces, projects, canCreate, canDe
       },
     },
     { key: "zone", header: "Zone", render: (p) => p.zone ?? "—" },
+    {
+      key: "type",
+      header: "Type",
+      render: (p) => {
+        if (!p.type) return <span className="text-fg-subtle">—</span>;
+        const { icon: Icon, label } = PARKING_TYPE_MAP[p.type];
+        return (
+          <span className="text-fg-muted inline-flex items-center gap-1.5">
+            <Icon aria-hidden className="size-4" />
+            {label}
+          </span>
+        );
+      },
+    },
     { key: "owner", header: "Owner", render: (p) => p.ownerLabel ?? <span className="text-fg-subtle">—</span> },
     { key: "status", header: "Status", render: (p) => <StatusBadge status={p.status} /> },
     {
@@ -161,6 +183,18 @@ export function ParkingAdminExplorer({ parkingSpaces, projects, canCreate, canDe
           className="text-body-sm h-10 rounded-md border border-border-strong bg-surface-raised px-3 text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent-soft"
         >
           {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as ParkingType | "all")}
+          aria-label="Filter by type"
+          className="text-body-sm h-10 rounded-md border border-border-strong bg-surface-raised px-3 text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent-soft"
+        >
+          {TYPE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

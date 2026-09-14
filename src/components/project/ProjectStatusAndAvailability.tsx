@@ -7,6 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { PROJECT_STATUS_LABEL, type Project, type ProjectStatus } from "@/content/projects";
 import { UNIT_STATUS_LABEL, type Unit } from "@/content/units";
+import { PARKING_TYPE_MAP } from "@/lib/parkingTypeIcons";
 import { cn } from "@/lib/utils";
 
 /** A plain-language rendering of the status enum — not project-specific data, just naming what the status means. */
@@ -36,11 +37,18 @@ export function ProjectStatusAndAvailability({
   /** Whether content/construction.ts has an entry for this project — gates the "View Construction Progress" link. */
   hasConstructionProgress?: boolean;
 }) {
+  const hasParkingAvailability =
+    project.availableParkingCar !== undefined ||
+    project.totalParkingCar !== undefined ||
+    project.availableParkingBike !== undefined ||
+    project.totalParkingBike !== undefined;
+
   const hasAvailability =
     project.availableUnits !== undefined ||
     project.totalUnits !== undefined ||
     (project.unitTypes && project.unitTypes.length > 0) ||
-    units.length > 0;
+    units.length > 0 ||
+    hasParkingAvailability;
 
   return (
     <Section spacing="lg">
@@ -83,6 +91,35 @@ export function ProjectStatusAndAvailability({
                         {type}
                       </span>
                     ))}
+                  </div>
+                  <Divider />
+                </div>
+              )}
+
+              {hasParkingAvailability && (
+                <div className="mt-5">
+                  <Divider />
+                  <div className="flex flex-wrap gap-x-6 gap-y-3 py-4">
+                    {(project.availableParkingCar !== undefined || project.totalParkingCar !== undefined) && (
+                      <div className="flex items-center gap-2">
+                        <PARKING_TYPE_MAP.car.icon aria-hidden className="text-fg-subtle size-4" />
+                        <span className="text-body-sm text-fg-muted">
+                          {project.availableParkingCar ?? 0}
+                          {" / "}
+                          {project.totalParkingCar ?? project.availableParkingCar ?? 0} {PARKING_TYPE_MAP.car.label} spaces
+                        </span>
+                      </div>
+                    )}
+                    {(project.availableParkingBike !== undefined || project.totalParkingBike !== undefined) && (
+                      <div className="flex items-center gap-2">
+                        <PARKING_TYPE_MAP.bike.icon aria-hidden className="text-fg-subtle size-4" />
+                        <span className="text-body-sm text-fg-muted">
+                          {project.availableParkingBike ?? 0}
+                          {" / "}
+                          {project.totalParkingBike ?? project.availableParkingBike ?? 0} {PARKING_TYPE_MAP.bike.label} spaces
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <Divider />
                 </div>

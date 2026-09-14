@@ -9,7 +9,14 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { generateParkingSpaces, type BulkParkingFormState } from "@/features/parking/bulkGenerate";
+import { PARKING_TYPE_MAP } from "@/lib/parkingTypeIcons";
 import type { Building } from "@/types/project";
+import type { ParkingType } from "@/types/parking";
+
+const TYPE_OPTIONS = (Object.keys(PARKING_TYPE_MAP) as ParkingType[]).map((value) => ({
+  value,
+  label: PARKING_TYPE_MAP[value].label,
+}));
 
 export interface BulkParkingGeneratorDrawerProps {
   open: boolean;
@@ -66,6 +73,13 @@ export function BulkParkingGeneratorDrawer({ open, onClose, projectId, buildings
           <Input label="Number Prefix" name="prefix" required defaultValue="P" helperText="e.g. P → P-01, P-02…" />
           <Input label="Starting Number" name="startNumber" type="number" required defaultValue={1} />
         </div>
+        <Select
+          label="Type (optional)"
+          name="type"
+          options={TYPE_OPTIONS}
+          placeholder="Not set — mixed, decide per space later"
+          helperText="Generating both car and bike spaces? Run this twice with different prefixes (e.g. C for car, B for bike) instead of mixing types in one batch."
+        />
         <p className="text-caption text-fg-subtle">
           Creates unowned, available parking spaces you can freely rename, assign, or remove individually afterward. Numbers that already exist in this
           project are skipped, never overwritten.

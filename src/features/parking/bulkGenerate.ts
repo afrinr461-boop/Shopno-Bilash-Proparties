@@ -7,10 +7,16 @@ import { hasPermission } from "@/lib/permissions";
 import { recordAuditEvent } from "@/features/audit/repository";
 import { parkingRepository } from "@/features/parking/repository";
 import { projectRepository } from "@/features/projects/repository";
+import type { ParkingType } from "@/types/parking";
 
 export interface BulkParkingFormState {
   error?: string;
   createdParking?: number;
+}
+
+const PARKING_TYPES: ParkingType[] = ["car", "bike", "reserved-visitor"];
+function isParkingType(value: string): value is ParkingType {
+  return (PARKING_TYPES as string[]).includes(value);
 }
 
 async function requireParkingManage() {
@@ -39,6 +45,8 @@ export async function generateParkingSpaces(
   const count = Number(formData.get("count") ?? 0);
   const prefix = String(formData.get("prefix") ?? "P").trim() || "P";
   const startNumber = Number(formData.get("startNumber") ?? 1);
+  const typeRaw = String(formData.get("type") ?? "").trim();
+  const type = isParkingType(typeRaw) ? typeRaw : undefined;
 
   if (!projectId) return { error: "Choose a project." };
   const project = await projectRepository.findById(projectId);
@@ -66,6 +74,7 @@ export async function generateParkingSpaces(
       projectId,
       buildingId: buildingId || undefined,
       parkingNumber,
+      type,
       status: "available",
       createdAt: now,
       updatedAt: now,

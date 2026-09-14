@@ -14,6 +14,7 @@ import {
   HardHat,
   FileText,
 } from "lucide-react";
+import { PARKING_TYPE_MAP } from "@/lib/parkingTypeIcons";
 import { getCurrentUser } from "@/lib/auth";
 import { resolveOwnerContext } from "@/lib/ownerContext";
 import { EmptyState } from "@/components/feedback/EmptyState";
@@ -184,13 +185,16 @@ export async function PropertyDetailPage({ base, unitId }: { base: string; unitI
           <p className="text-body-sm text-fg-muted">No parking space is currently assigned to this property.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {parking.map((p) => (
-              <span key={p.id} className="border-border text-body-sm text-fg inline-flex items-center gap-2 rounded-full border px-4 py-2">
-                <Car aria-hidden className="text-fg-subtle size-4" />
-                {p.parkingNumber}
-                {p.type && <span className="text-fg-subtle">· {p.type}</span>}
-              </span>
-            ))}
+            {parking.map((p) => {
+              const ParkingIcon = p.type ? PARKING_TYPE_MAP[p.type].icon : Car;
+              return (
+                <span key={p.id} className="border-border text-body-sm text-fg inline-flex items-center gap-2 rounded-full border px-4 py-2">
+                  <ParkingIcon aria-hidden className="text-fg-subtle size-4" />
+                  {p.parkingNumber}
+                  {p.type && <span className="text-fg-subtle">· {PARKING_TYPE_MAP[p.type].label}</span>}
+                </span>
+              );
+            })}
           </div>
         )}
       </Reveal>

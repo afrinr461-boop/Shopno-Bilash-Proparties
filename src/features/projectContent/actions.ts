@@ -62,6 +62,10 @@ function parseProjectFields(formData: FormData) {
   const completionYearRaw = String(formData.get("completionYear") ?? "");
   const totalUnitsRaw = String(formData.get("totalUnits") ?? "");
   const availableUnitsRaw = String(formData.get("availableUnits") ?? "");
+  const totalParkingCarRaw = String(formData.get("totalParkingCar") ?? "");
+  const availableParkingCarRaw = String(formData.get("availableParkingCar") ?? "");
+  const totalParkingBikeRaw = String(formData.get("totalParkingBike") ?? "");
+  const availableParkingBikeRaw = String(formData.get("availableParkingBike") ?? "");
   const floorsRaw = String(formData.get("floors") ?? "");
   const featured = formData.get("featured") === "on";
 
@@ -90,6 +94,10 @@ function parseProjectFields(formData: FormData) {
       completionYear: toOptionalNumber(completionYearRaw),
       totalUnits: toOptionalNumber(totalUnitsRaw),
       availableUnits: toOptionalNumber(availableUnitsRaw),
+      totalParkingCar: toOptionalNumber(totalParkingCarRaw),
+      availableParkingCar: toOptionalNumber(availableParkingCarRaw),
+      totalParkingBike: toOptionalNumber(totalParkingBikeRaw),
+      availableParkingBike: toOptionalNumber(availableParkingBikeRaw),
       floors: toOptionalNumber(floorsRaw),
       featured,
     },
@@ -131,6 +139,10 @@ export async function createProjectContent(
     completionYear: fields.completionYear,
     totalUnits: fields.totalUnits,
     availableUnits: fields.availableUnits,
+    totalParkingCar: fields.totalParkingCar,
+    availableParkingCar: fields.availableParkingCar,
+    totalParkingBike: fields.totalParkingBike,
+    availableParkingBike: fields.availableParkingBike,
     floors: fields.floors,
     featured: fields.featured,
     coverImage: { src: "/placeholder-image.png", alt: fields.name },
@@ -189,6 +201,10 @@ export async function updateProjectContent(
     completionYear: fields.completionYear,
     totalUnits: fields.totalUnits,
     availableUnits: fields.availableUnits,
+    totalParkingCar: fields.totalParkingCar,
+    availableParkingCar: fields.availableParkingCar,
+    totalParkingBike: fields.totalParkingBike,
+    availableParkingBike: fields.availableParkingBike,
     floors: fields.floors,
     featured: fields.featured,
   });

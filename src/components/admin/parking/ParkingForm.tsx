@@ -6,9 +6,10 @@ import { AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
-import type { Parking } from "@/types/parking";
+import type { Parking, ParkingType } from "@/types/parking";
 import type { Building, Project } from "@/types/project";
 import type { ParkingFormState } from "@/features/parking/actions";
+import { PARKING_TYPE_MAP } from "@/lib/parkingTypeIcons";
 
 export interface ParkingFormProps {
   action: (state: ParkingFormState, formData: FormData) => Promise<ParkingFormState>;
@@ -26,11 +27,12 @@ const STATUS_OPTIONS = [
   { value: "unavailable", label: "Unavailable" },
 ];
 
-const TYPE_OPTIONS = [
-  { value: "car", label: "Car" },
-  { value: "bike", label: "Bike" },
-  { value: "reserved-visitor", label: "Reserved / Visitor" },
-];
+// Shared with the Owner Portal display and the public availability summary
+// (`src/lib/parkingTypeIcons.ts`) so the label wording can't drift apart.
+const TYPE_OPTIONS = (Object.keys(PARKING_TYPE_MAP) as ParkingType[]).map((value) => ({
+  value,
+  label: PARKING_TYPE_MAP[value].label,
+}));
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
