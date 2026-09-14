@@ -6,6 +6,78 @@ import { getStore } from "@netlify/blobs";
 const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
 const BLOB_STORE_NAME = "uploads";
 
+export type StoreKind = "blob" | "disk";
+
+function toArrayBuffer(buffer: Buffer): ArrayBuffer {
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+}
+
+/**
+ * Thrown by `@netlify/blobs` (as `MissingBlobsEnvironmentError`, an
+ * internal class not exported from its public API — matched by `.name`
+ * instead) whenever there's no ambient Blobs context to work with, i.e.
+ * genuinely NOT running on Netlify. The one signal this module trusts to
+ * mean "fall back to disk" — see the big comment on `writeToStore` below
+ * for why a real attempt replaced an earlier environment-variable guess.
+ */
+function isMissingBlobsEnvironment(error: unknown): boolean {
+  return error instanceof Error && error.name === "MissingBlobsEnvironmentError";
+}
+
+async function blobWrite(relativePath: string, data: Buffer): Promise<void> {
+  await getStore(BLOB_STORE_NAME).set(relativePath, toArrayBuffer(data));
+}
+
+async function blobRead(relativePath: string): Promise<Buffer | null> {
+  const result = await getStore(BLOB_STORE_NAME).get(relativePath, { type: "arrayBuffer" });
+  return result ? Buffer.from(result) : null;
+}
+
+async function blobRemove(relativePath: string): Promise<void> {
+  await getStore(BLOB_STORE_NAME).delete(relativePath);
+}
+
+async function blobList(): Promise<string[]> {
+  const result = await getStore(BLOB_STORE_NAME).list();
+  return result.blobs.map((blob) => blob.key);
+}
+
+async function diskWrite(relativePath: string, data: Buffer): Promise<void> {
+  const destination = path.join(UPLOADS_ROOT, relativePath);
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(destination, data);
+}
+
+async function diskRead(relativePath: string): Promise<Buffer | null> {
+  try {
+    return await readFile(path.join(UPLOADS_ROOT, relativePath));
+  } catch {
+    return null;
+  }
+}
+
+async function diskRemove(relativePath: string): Promise<void> {
+  try {
+    await unlink(path.join(UPLOADS_ROOT, relativePath));
+  } catch {
+    // Already gone — nothing to do.
+  }
+}
+
+async function diskList(): Promise<string[]> {
+  try {
+    const entries = await readdir(UPLOADS_ROOT, { recursive: true });
+    const files: string[] = [];
+    for (const entry of entries) {
+      const full = path.join(UPLOADS_ROOT, entry);
+      if ((await stat(full)).isFile()) files.push(entry.split(path.sep).join("/"));
+    }
+    return files;
+  } catch {
+    return []; // No uploads directory yet (a fresh install, or genuinely nothing written locally) — not an error.
+  }
+}
+
 /**
  * Netlify's serverless functions have no persistent disk — the same reason
  * this app's database moved from a local SQLite file to Neon Postgres.
@@ -14,97 +86,57 @@ const BLOB_STORE_NAME = "uploads";
  * process, real disk) but silently loses every uploaded file on Netlify (a
  * fresh, isolated container per invocation, no shared writable disk).
  *
- * `process.env.NETLIFY` is set to `"true"` by Netlify's build and runtime
- * environment (and never set locally), so this picks Blob storage there and
- * plain disk storage everywhere else — zero behavior change for local dev,
- * real persistence once deployed. Both implementations share this one
- * interface so `fileStorage.ts`/`backup.ts` never need to know which one is
- * active.
+ * The first version of this fix picked a backend by checking
+ * `process.env.NETLIFY === "true"` — confirmed WRONG in practice: that
+ * variable is set at build time but wasn't present in the actual deployed
+ * Server Action runtime, so uploads kept falling through to disk and
+ * failing with `ENOENT: ... mkdir '/var/task/public'` (a deployed
+ * function's own filesystem has no writable `public/`). This version
+ * doesn't guess — `write()` always attempts Netlify Blobs first (the
+ * correct backend whenever really running on Netlify) and only falls back
+ * to disk when Blobs itself reports there's no ambient context available
+ * (`MissingBlobsEnvironmentError`), which is genuinely local dev. Whichever
+ * one actually succeeded is returned as `StoreKind`, so `fileStorage.ts`
+ * can build the right URL instead of assuming one.
  */
-export interface UploadStore {
-  /** Relative path within the store, e.g. `"settings/abc-logo.png"`. */
-  write(relativePath: string, data: Buffer): Promise<void>;
-  read(relativePath: string): Promise<Buffer | null>;
-  remove(relativePath: string): Promise<void>;
-  /** Every currently-stored relative path — for the full-backup zip. */
-  list(): Promise<string[]>;
-}
-
-function toArrayBuffer(buffer: Buffer): ArrayBuffer {
-  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
-}
-
-class LocalDiskStore implements UploadStore {
-  async write(relativePath: string, data: Buffer): Promise<void> {
-    const destination = path.join(UPLOADS_ROOT, relativePath);
-    await mkdir(path.dirname(destination), { recursive: true });
-    await writeFile(destination, data);
-  }
-
-  async read(relativePath: string): Promise<Buffer | null> {
-    try {
-      return await readFile(path.join(UPLOADS_ROOT, relativePath));
-    } catch {
-      return null;
-    }
-  }
-
-  async remove(relativePath: string): Promise<void> {
-    try {
-      await unlink(path.join(UPLOADS_ROOT, relativePath));
-    } catch {
-      // Already gone — nothing to do.
-    }
-  }
-
-  async list(): Promise<string[]> {
-    try {
-      const entries = await readdir(UPLOADS_ROOT, { recursive: true });
-      const files: string[] = [];
-      for (const entry of entries) {
-        const full = path.join(UPLOADS_ROOT, entry);
-        if ((await stat(full)).isFile()) files.push(entry.split(path.sep).join("/"));
-      }
-      return files;
-    } catch {
-      return []; // No uploads directory yet (a fresh install) — not an error.
-    }
+export async function writeToStore(relativePath: string, data: Buffer): Promise<StoreKind> {
+  try {
+    await blobWrite(relativePath, data);
+    return "blob";
+  } catch (error) {
+    if (!isMissingBlobsEnvironment(error)) throw error;
+    await diskWrite(relativePath, data);
+    return "disk";
   }
 }
 
-class NetlifyBlobStoreAdapter implements UploadStore {
-  private store() {
-    return getStore(BLOB_STORE_NAME);
-  }
-
-  async write(relativePath: string, data: Buffer): Promise<void> {
-    await this.store().set(relativePath, toArrayBuffer(data));
-  }
-
-  async read(relativePath: string): Promise<Buffer | null> {
-    const result = await this.store().get(relativePath, { type: "arrayBuffer" });
-    return result ? Buffer.from(result) : null;
-  }
-
-  async remove(relativePath: string): Promise<void> {
-    await this.store().delete(relativePath);
-  }
-
-  async list(): Promise<string[]> {
-    const result = await this.store().list();
-    return result.blobs.map((blob) => blob.key);
-  }
+export async function removeFromStore(relativePath: string, kind: StoreKind): Promise<void> {
+  if (kind === "blob") await blobRemove(relativePath);
+  else await diskRemove(relativePath);
 }
 
-const localDiskStore = new LocalDiskStore();
-const netlifyBlobStore = new NetlifyBlobStoreAdapter();
-
-/** The single decision point — everything else just calls the returned store. */
-export function getUploadStore(): UploadStore {
-  return process.env.NETLIFY === "true" ? netlifyBlobStore : localDiskStore;
+/** Only for `/api/uploads/[...path]` — that URL is only ever handed out for a Blob-backed write, so it only ever needs to read Blobs. */
+export async function readFromBlobStore(relativePath: string): Promise<Buffer | null> {
+  return blobRead(relativePath);
 }
 
-/** Whether the active store is Blob-backed — `saveUploadedFile` uses this to pick the right public URL prefix. */
-export function isUsingBlobStore(): boolean {
-  return process.env.NETLIFY === "true";
+export async function readFromStore(relativePath: string, kind: StoreKind): Promise<Buffer | null> {
+  return kind === "blob" ? blobRead(relativePath) : diskRead(relativePath);
+}
+
+/** Every file across both backends — for the full-backup zip, which predates this split and should still capture everything regardless of where a given file landed. */
+export async function listAllStoredFiles(): Promise<{ relativePath: string; kind: StoreKind }[]> {
+  const files: { relativePath: string; kind: StoreKind }[] = [];
+
+  try {
+    const blobPaths = await blobList();
+    files.push(...blobPaths.map((relativePath) => ({ relativePath, kind: "blob" as const })));
+  } catch (error) {
+    if (!isMissingBlobsEnvironment(error)) throw error;
+  }
+
+  const diskPaths = await diskList();
+  files.push(...diskPaths.map((relativePath) => ({ relativePath, kind: "disk" as const })));
+
+  return files;
 }

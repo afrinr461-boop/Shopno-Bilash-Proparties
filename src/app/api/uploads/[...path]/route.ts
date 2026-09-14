@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getUploadStore } from "@/lib/uploadStore";
+import { readFromBlobStore } from "@/lib/uploadStore";
 
 const MIME_TYPES: Record<string, string> = {
   pdf: "application/pdf",
@@ -25,7 +25,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const { path: segments } = await params;
   const relativePath = segments.join("/");
 
-  const data = await getUploadStore().read(relativePath);
+  const data = await readFromBlobStore(relativePath);
   if (!data) return new NextResponse("Not found", { status: 404 });
 
   const extension = relativePath.split(".").pop()?.toLowerCase() ?? "";

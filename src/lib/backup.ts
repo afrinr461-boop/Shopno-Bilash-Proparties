@@ -1,7 +1,7 @@
 import "server-only";
 import AdmZip from "adm-zip";
 import { prisma } from "@/lib/db";
-import { getUploadStore } from "@/lib/uploadStore";
+import { listAllStoredFiles, readFromStore, writeToStore } from "@/lib/uploadStore";
 
 // Ephemeral security bookkeeping, not real business data — restoring old
 // rate-limit rows on top of a live system could reintroduce a stale
@@ -51,12 +51,11 @@ export async function buildBackupZip(mode: "full" | "data"): Promise<Buffer> {
   let fileCount = 0;
 
   if (mode === "full") {
-    const store = getUploadStore();
-    const relativePaths = await store.list();
-    for (const relative of relativePaths) {
-      const content = await store.read(relative);
+    const files = await listAllStoredFiles();
+    for (const { relativePath, kind } of files) {
+      const content = await readFromStore(relativePath, kind);
       if (!content) continue; // Listed but unreadable between the list() and read() calls — skip rather than fail the whole backup.
-      zip.addFile(`uploads/${relative}`, content);
+      zip.addFile(`uploads/${relativePath}`, content);
       fileCount += 1;
     }
   }
@@ -141,11 +140,10 @@ export async function restoreFromZip(buffer: Buffer): Promise<RestoreSummary> {
 
   let fileCount = 0;
   const uploadEntries = zip.getEntries().filter((e) => !e.isDirectory && e.entryName.startsWith("uploads/"));
-  const store = getUploadStore();
   for (const entry of uploadEntries) {
     const relative = entry.entryName.slice("uploads/".length);
     if (!relative || relative.includes("..")) continue; // Defensive — a crafted entry name shouldn't be able to write outside the uploads store.
-    await store.write(relative, entry.getData());
+    await writeToStore(relative, entry.getData());
     fileCount += 1;
   }
 

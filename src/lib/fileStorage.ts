@@ -1,7 +1,7 @@
 import "server-only";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { getUploadStore, isUsingBlobStore } from "@/lib/uploadStore";
+import { writeToStore, removeFromStore, type StoreKind } from "@/lib/uploadStore";
 
 const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15MB — comfortably above a scanned deed/agreement, well under the 20MB Server Action body limit set in next.config.ts.
 const ALLOWED_EXTENSIONS = new Set(["pdf", "jpg", "jpeg", "png", "webp", "doc", "docx"]);
@@ -23,14 +23,16 @@ function getExtension(fileName: string): string {
 
 /**
  * Writes an uploaded `File` (from a Server Action's `FormData`) via
- * `getUploadStore()` — local disk in dev, Netlify Blobs once deployed (see
- * `uploadStore.ts`'s own comment) — named `<uuid>-<sanitized original
- * name>` so two uploads never collide. Returns the public URL path (usable
- * directly as `fileUrl`/`<img src>`) and the file's size/extension for
- * display: a local-disk file keeps the old `/uploads/...` path (served by
- * Next's static `public/` folder), a Blob-stored one is served through
- * `/api/uploads/...` (`src/app/api/uploads/[...path]/route.ts`) instead,
- * since a Blob has no filesystem path of its own to serve statically.
+ * `writeToStore()` — Netlify Blobs whenever actually deployed on Netlify,
+ * local disk in dev (see `uploadStore.ts`'s own comment for why this is a
+ * real attempt-then-fallback, not a pre-guessed environment check) — named
+ * `<uuid>-<sanitized original name>` so two uploads never collide. Returns
+ * the public URL path (usable directly as `fileUrl`/`<img src>`) and the
+ * file's size/extension for display: a local-disk file keeps the old
+ * `/uploads/...` path (served by Next's static `public/` folder), a
+ * Blob-stored one is served through `/api/uploads/...`
+ * (`src/app/api/uploads/[...path]/route.ts`) instead, since a Blob has no
+ * filesystem path of its own to serve statically.
  */
 export async function saveUploadedFile(file: File, subdir: string): Promise<SavedFile> {
   if (file.size === 0) throw new Error("The selected file is empty.");
@@ -44,20 +46,20 @@ export async function saveUploadedFile(file: File, subdir: string): Promise<Save
   const fileName = `${randomUUID()}-${sanitizeFileName(file.name)}`;
   const relativePath = `${subdir}/${fileName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await getUploadStore().write(relativePath, buffer);
+  const kind = await writeToStore(relativePath, buffer);
 
-  const urlPrefix = isUsingBlobStore() ? "/api/uploads" : "/uploads";
+  const urlPrefix = kind === "blob" ? "/api/uploads" : "/uploads";
   return { url: `${urlPrefix}/${relativePath}`, size: file.size, extension };
 }
 
 /** Best-effort cleanup — a missing file (already deleted, or a path from before this store existed) is not an error. */
 export async function deleteUploadedFile(url: string): Promise<void> {
-  const relativePath = url.startsWith("/api/uploads/")
-    ? url.slice("/api/uploads/".length)
+  const parsed: { relativePath: string; kind: StoreKind } | null = url.startsWith("/api/uploads/")
+    ? { relativePath: url.slice("/api/uploads/".length), kind: "blob" }
     : url.startsWith("/uploads/")
-      ? url.slice("/uploads/".length)
+      ? { relativePath: url.slice("/uploads/".length), kind: "disk" }
       : null;
-  if (!relativePath) return;
+  if (!parsed) return;
 
-  await getUploadStore().remove(relativePath);
+  await removeFromStore(parsed.relativePath, parsed.kind);
 }
