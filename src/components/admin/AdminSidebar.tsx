@@ -39,7 +39,7 @@ export function AdminSidebar({ role, incompleteHrefs, settings }: AdminSidebarPr
   const helpGroup = ADMIN_NAV_GROUPS.filter((group) => group.label === "Help");
 
   return (
-    <aside className="border-border bg-surface fixed inset-y-0 left-0 z-30 hidden h-screen w-64 flex-col border-r lg:flex">
+    <aside className="border-border bg-surface fixed inset-y-0 left-0 z-30 hidden h-screen w-64 flex-col border-r print:hidden lg:flex">
       <div className="border-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
         <Logo
           href="/admin"

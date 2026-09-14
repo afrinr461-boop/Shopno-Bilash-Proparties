@@ -44,9 +44,9 @@ export function AdminShell({ user, children, incompleteHrefs, settings }: AdminS
         incompleteHrefs={incompleteHrefs}
       />
 
-      <div className="min-w-0 flex-1 lg:pl-64">
+      <div className="min-w-0 flex-1 print:pl-0 lg:pl-64">
         <AdminHeader user={user} onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="min-w-0 pt-16">{children}</main>
+        <main className="min-w-0 pt-16 print:pt-0">{children}</main>
       </div>
     </div>
   );

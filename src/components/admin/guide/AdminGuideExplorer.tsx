@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, Download } from "lucide-react";
 import type { GuideGroup } from "@/content/adminGuide";
 
 export interface AdminGuideExplorerProps {
@@ -23,6 +23,19 @@ function slugify(label: string): string {
 export function AdminGuideExplorer({ groups }: AdminGuideExplorerProps) {
   const [search, setSearch] = useState("");
 
+  /**
+   * The browser's own print pipeline, not a PDF library — `window.print()`
+   * with "Save as PDF" as the destination produces a real PDF with zero
+   * added dependencies. Clears any active search first (and waits a tick
+   * for that state to actually reach the DOM) so the export always
+   * captures the full guide, never a filtered subset the admin happened
+   * to be mid-search on.
+   */
+  function handleCopyGuide() {
+    setSearch("");
+    requestAnimationFrame(() => window.print());
+  }
+
   const filteredGroups = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return groups;
@@ -41,7 +54,7 @@ export function AdminGuideExplorer({ groups }: AdminGuideExplorerProps) {
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-      <aside className="border-border bg-surface-raised top-20 flex shrink-0 flex-col gap-4 rounded-lg border p-4 lg:sticky lg:w-64">
+      <aside className="border-border bg-surface-raised top-20 flex shrink-0 flex-col gap-4 rounded-lg border p-4 print:hidden lg:sticky lg:w-64">
         <div className="relative">
           <Search aria-hidden className="text-fg-subtle pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <input
@@ -74,6 +87,14 @@ export function AdminGuideExplorer({ groups }: AdminGuideExplorerProps) {
             </div>
           ))}
         </nav>
+        <button
+          type="button"
+          onClick={handleCopyGuide}
+          className="border-border-strong text-body-sm text-fg hover:bg-surface flex shrink-0 items-center justify-center gap-2 rounded-md border py-2 transition-colors"
+        >
+          <Download aria-hidden className="size-4" />
+          Copy this guide
+        </button>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col gap-10">
@@ -90,7 +111,7 @@ export function AdminGuideExplorer({ groups }: AdminGuideExplorerProps) {
                   <article
                     key={item.href}
                     id={`${slugify(group.label)}-${slugify(item.label)}`}
-                    className="border-border bg-surface-raised scroll-mt-20 rounded-lg border p-5"
+                    className="border-border bg-surface-raised scroll-mt-20 break-inside-avoid rounded-lg border p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="text-body text-fg font-medium">{item.label}</h3>

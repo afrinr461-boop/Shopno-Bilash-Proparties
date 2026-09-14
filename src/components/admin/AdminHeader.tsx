@@ -37,7 +37,7 @@ function initials(name: string): string {
  */
 export function AdminHeader({ user, onOpenMobileNav }: AdminHeaderProps) {
   return (
-    <header className="border-border bg-bg/95 fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-4 border-b px-4 backdrop-blur-sm sm:px-6 lg:left-64">
+    <header className="border-border bg-bg/95 fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-4 border-b px-4 backdrop-blur-sm print:hidden sm:px-6 lg:left-64">
       <IconButton icon={Menu} label="Open menu" onClick={onOpenMobileNav} className="lg:hidden" />
 
       <GlobalSearch user={user} />
