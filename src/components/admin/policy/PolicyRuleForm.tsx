@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 import { RichTextArea } from "@/components/ui/RichTextArea";
 import { Button } from "@/components/ui/Button";
 import type { PolicyRuleFormState } from "@/features/policyRules/actions";
@@ -36,14 +37,23 @@ export function PolicyRuleForm({ action, rule, submitLabel }: PolicyRuleFormProp
         </div>
       )}
 
+      <Input
+        label="Title"
+        name="title"
+        required
+        defaultValue={rule?.title}
+        placeholder="e.g. Pricing, Cancellations, Payment Terms"
+        helperText="A short heading, shown above this rule's text on both this list and the public page."
+      />
+
       <RichTextArea
         label="Rule Text"
         name="text"
         required
-        rows={4}
+        rows={6}
         defaultValue={rule?.text}
-        placeholder="e.g. All unit prices published on this website are subject to change without prior notice."
-        helperText="Shown on the public Company Policy page, auto-numbered by its position in the list — select text and press Bold to emphasize a specific phrase."
+        placeholder={"e.g. All unit prices published on this website are subject to change without prior notice.\n\n- A booking is only confirmed once the initial payment is received.\n- Refund terms are set out in the individual sale agreement."}
+        helperText="Shown on the public Company Policy page under this rule's title, auto-numbered by its position in the list. Select text and press Bold, or click List to bullet the current line — press Enter for a new line, leave a blank line for a new paragraph."
       />
 
       <div className="flex items-center gap-3">

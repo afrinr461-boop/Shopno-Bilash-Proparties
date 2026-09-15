@@ -25,3 +25,64 @@ export function renderBoldMarkup(text: string): ReactNode[] {
 
   return nodes;
 }
+
+/**
+ * One step up from `renderBoldMarkup`, for text that needs paragraphs and
+ * bullet lists too (e.g. Company Policy rule bodies) — still just two more
+ * conventions on top of `**bold**`, not a real markdown parser: a line
+ * starting with `- ` joins a bullet list, a blank line starts a new
+ * paragraph, anything else is just a line (joined with the rest of its
+ * paragraph by a line break).
+ */
+export function renderRichText(text: string): ReactNode {
+  const lines = text.split("\n");
+  const blocks: ReactNode[] = [];
+  let bulletBuffer: string[] = [];
+  let paraBuffer: string[] = [];
+  let blockKey = 0;
+
+  function flushBullets() {
+    if (bulletBuffer.length === 0) return;
+    blocks.push(
+      <ul key={`ul-${blockKey++}`} className="flex list-disc flex-col gap-1 pl-5">
+        {bulletBuffer.map((line, i) => (
+          <li key={i}>{renderBoldMarkup(line)}</li>
+        ))}
+      </ul>,
+    );
+    bulletBuffer = [];
+  }
+
+  function flushParagraph() {
+    if (paraBuffer.length === 0) return;
+    blocks.push(
+      <p key={`p-${blockKey++}`}>
+        {paraBuffer.map((line, i) => (
+          <span key={i}>
+            {renderBoldMarkup(line)}
+            {i < paraBuffer.length - 1 && <br />}
+          </span>
+        ))}
+      </p>,
+    );
+    paraBuffer = [];
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("- ")) {
+      flushParagraph();
+      bulletBuffer.push(trimmed.slice(2));
+    } else if (trimmed === "") {
+      flushBullets();
+      flushParagraph();
+    } else {
+      flushBullets();
+      paraBuffer.push(line);
+    }
+  }
+  flushBullets();
+  flushParagraph();
+
+  return <>{blocks}</>;
+}

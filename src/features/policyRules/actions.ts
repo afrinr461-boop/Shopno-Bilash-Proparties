@@ -20,9 +20,11 @@ async function requireContentPermission(permission: "content.create" | "content.
 }
 
 function parsePolicyRuleFields(formData: FormData) {
+  const title = String(formData.get("title") ?? "").trim();
   const text = String(formData.get("text") ?? "").trim();
+  if (!title) return { error: "Enter a title for this rule." } as const;
   if (!text || text.length < 4) return { error: "Enter the rule's text." } as const;
-  return { fields: { text } } as const;
+  return { fields: { title, text } } as const;
 }
 
 export async function createPolicyRule(_prevState: PolicyRuleFormState, formData: FormData): Promise<PolicyRuleFormState> {

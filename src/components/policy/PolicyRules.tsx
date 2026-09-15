@@ -1,7 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
-import { renderBoldMarkup } from "@/lib/richText";
+import { renderRichText } from "@/lib/richText";
 import type { PolicyRule } from "@/types/policyRule";
 
 /**
@@ -30,7 +30,10 @@ export function PolicyRules({ rules }: { rules: PolicyRule[] }) {
                 >
                   {i + 1}
                 </span>
-                <p className="text-body-lg text-fg pt-1.5">{renderBoldMarkup(rule.text)}</p>
+                <div className="flex flex-col gap-1.5 pt-1.5">
+                  <h3 className="text-h4 text-fg">{rule.title}</h3>
+                  <div className="text-body-lg text-fg-muted flex flex-col gap-3">{renderRichText(rule.text)}</div>
+                </div>
               </Reveal>
             ))}
           </ol>

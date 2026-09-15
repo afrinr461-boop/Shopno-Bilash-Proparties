@@ -31,7 +31,16 @@ export function PolicyRuleAdminTable({ rules, canDelete }: PolicyRuleAdminTableP
       header: "#",
       render: (r) => <span className="text-numeric text-fg-subtle">{rules.indexOf(r) + 1}</span>,
     },
-    { key: "text", header: "Rule", render: (r) => <span className="text-fg line-clamp-2">{r.text}</span> },
+    {
+      key: "text",
+      header: "Rule",
+      render: (r) => (
+        <div>
+          <p className="text-fg font-medium">{r.title}</p>
+          <p className="text-fg-subtle line-clamp-2">{r.text}</p>
+        </div>
+      ),
+    },
     {
       key: "actions",
       header: "",

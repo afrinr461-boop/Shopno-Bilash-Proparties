@@ -421,10 +421,11 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         permission: "content.view",
         summary: "Numbered company-policy rules shown on the public /policy page — separate from Pages' Privacy/Terms/Disclaimer/Cookie policies.",
         details: [
-          "Each rule is just its text — \"Rule 1\", \"Rule 2\" etc. is generated automatically from each rule's position in the list, so you never type the number yourself.",
-          "Select text in the Rule Text box and press the Bold button (or type ** on both sides of a phrase) to make that specific phrase bold on the public page.",
+          "Each rule has its own short Title (shown as a heading) plus a Rule Text body — \"Rule 1\", \"Rule 2\" etc. is generated automatically from each rule's position in the list, so you never type the number yourself.",
+          "In the Rule Text box: select text and press Bold (or type ** on both sides of a phrase) to make that specific phrase bold. Press Enter for a plain new line, leave a blank line to start a new paragraph, or click List to turn the current line into a bullet point (type lines starting with \"- \" directly, or use the toolbar button).",
           "Rules always publish in the order you added them — to reorder, delete and re-add in the order you want.",
           "With zero rules, the public page shows a brief \"not published yet\" placeholder instead of an empty page.",
+          "This page starts out with generic draft policy text (Pricing, Booking & Payment, Cancellations, Handover, Communication, Governing Law, Changes to this Policy) — a working starting point, not reviewed legal language. Have a lawyer review and edit/replace this content before relying on it.",
         ],
       },
     ],
