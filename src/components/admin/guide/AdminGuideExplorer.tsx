@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight, Download } from "lucide-react";
+import { Search, ArrowRight, Download, HeartHandshake } from "lucide-react";
 import type { GuideGroup } from "@/content/adminGuide";
 
 export interface AdminGuideExplorerProps {
@@ -95,6 +95,11 @@ export function AdminGuideExplorer({ groups }: AdminGuideExplorerProps) {
           <Download aria-hidden className="size-4" />
           Copy this guide
         </button>
+
+        <div className="border-border bg-surface flex flex-col items-center gap-2 rounded-lg border border-dashed p-5 text-center">
+          <HeartHandshake aria-hidden className="text-accent size-6" />
+          <p className="text-caption text-fg-subtle">Built on trust. Designed for the future.</p>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col gap-10">
