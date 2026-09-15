@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { LogIn } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { DesktopNav } from "./DesktopNav";
 import { Logo } from "./Logo";
@@ -9,6 +11,7 @@ import { MenuButton } from "./MenuButton";
 import { MobileNav } from "./MobileNav";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { SavedTrigger } from "@/components/saved/SavedTrigger";
+import { cn } from "@/lib/utils";
 import type { CompanySettings } from "@/types/settings";
 
 // Where along the header's own width to sample the page content behind it —
@@ -135,6 +138,18 @@ export function Header({ settings }: { settings: CompanySettings | null }) {
               <SearchTrigger tone={tone} variant="full" />
               <SearchTrigger tone={tone} variant="compact" />
               <SavedTrigger tone={tone} />
+              {settings?.showPublicSignInLink && (
+                <Link
+                  href="/login"
+                  className={cn(
+                    "hidden items-center gap-1.5 rounded-md px-2 text-body-sm font-medium transition-colors sm:flex",
+                    tone === "inverted" ? "text-white/90 hover:bg-white/10" : "text-fg-muted hover:bg-surface hover:text-fg",
+                  )}
+                >
+                  <LogIn aria-hidden className="size-4" />
+                  Sign In
+                </Link>
+              )}
               <MenuButton
                 ref={menuButtonRef}
                 open={mobileOpen}
@@ -147,7 +162,7 @@ export function Header({ settings }: { settings: CompanySettings | null }) {
         </Container>
       </header>
 
-      <MobileNav id={mobileNavId} open={mobileOpen} onClose={closeMobileNav} />
+      <MobileNav id={mobileNavId} open={mobileOpen} onClose={closeMobileNav} showSignIn={settings?.showPublicSignInLink} />
     </>
   );
 }

@@ -156,6 +156,12 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
         description="On (default): owners must enter their 4-digit PIN, same as today. Off: entering a registered phone number alone signs an owner straight in, no PIN asked — easier for owners who find a PIN confusing, but anyone who knows an owner's phone number can then see that owner's portal data too. Staff/Admin login always requires a password regardless of this setting."
         defaultChecked={settings.requireOwnerPin ?? true}
       />
+      <Switch
+        name="showPublicSignInLink"
+        label="Show a Sign In link on the public website"
+        description="Off (default): the login page has no visible link anywhere on the public site — Property Owners and Staff bookmark /login themselves. On: a 'Sign In' link appears in the public header on every page, for anyone who can't type a URL. Turn it back off any time if this ever feels like it draws the wrong kind of attention — it never affects who can actually sign in, only whether the door is signposted."
+        defaultChecked={settings.showPublicSignInLink ?? false}
+      />
 
       <div className="flex items-center gap-3">
         <SubmitButton />

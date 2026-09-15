@@ -66,4 +66,14 @@ export interface CompanySettings extends AuditFields {
    * regardless of this setting.
    */
   requireOwnerPin?: boolean;
+  /**
+   * Defaults to hidden (`false`/unset) — matches this site's original,
+   * deliberate design (see DEPLOYMENT_GUIDE.md: "no visible Admin link
+   * anywhere on the public site"). When `true`, a "Sign In" link appears
+   * in the public header (`Header.tsx`) pointing at `/login`, for Property
+   * Owners/Staff who can't type the URL themselves — an explicit
+   * discoverability-vs-obscurity tradeoff the admin opts into, and can
+   * turn back off in one click if it ever looks like a problem.
+   */
+  showPublicSignInLink?: boolean;
 }

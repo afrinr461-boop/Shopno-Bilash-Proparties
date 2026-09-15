@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { LogIn } from "lucide-react";
 import {
   PUBLIC_NAV_PRIMARY,
   PUBLIC_NAV_MORE,
@@ -16,11 +17,13 @@ export interface MobileNavProps {
   id: string;
   open: boolean;
   onClose: () => void;
+  /** Mirrors `CompanySettings.showPublicSignInLink` — the header's own persistent "Sign In" link hides below `sm`, so this is where a phone-width visitor actually finds it. */
+  showSignIn?: boolean;
 }
 
 const FOCUSABLE = 'a[href], button:not([disabled])';
 
-export function MobileNav({ id, open, onClose }: MobileNavProps) {
+export function MobileNav({ id, open, onClose, showSignIn }: MobileNavProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Lock body scroll and move focus into the panel while open.
@@ -125,6 +128,16 @@ export function MobileNav({ id, open, onClose }: MobileNavProps) {
               {item.label}
             </Link>
           ))}
+          {showSignIn && (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="text-h4 text-fg-muted hover:text-fg flex items-center gap-2 transition-colors"
+            >
+              <LogIn aria-hidden className="size-5" />
+              Sign In
+            </Link>
+          )}
         </div>
       </nav>
 
