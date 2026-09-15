@@ -74,7 +74,8 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         summary: "Parking spaces — a completely independent entity from units, not automatically tied to any flat.",
         details: [
           "A parking space can be unassigned, assigned to the same owner as a unit, or assigned to a totally different person — it never auto-follows unit ownership.",
-          "Bulk-generate parking spaces for a project instead of adding them one by one.",
+          "Every space has a Type — Car, Bike, or Reserved/Visitor — shown as a column and filterable in the list, and with its own icon everywhere it's shown (this list, the Owner Portal, the public project page's availability summary).",
+          "Bulk-generate parking spaces for a project instead of adding them one by one — set a Type there too if the whole batch is one kind (run the generator twice, with different prefixes, for a mixed car+bike batch).",
         ],
       },
       {
@@ -185,6 +186,7 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         summary: "Budget lines per project (and optionally per construction stage) — what you planned to spend vs. what's actually been spent.",
         details: [
           "Set warning/over-budget thresholds (default 80%/100%) — the budget status badge (Under/On/Over Budget) updates automatically as real costs come in.",
+          "\"Actual\" here is labelled \"Actual (Manual)\" — you type it in by hand, it isn't calculated. For the real, live-computed actual cost (the true sum of every verified Purchase, Expense and Contractor Payment), check that project's own Reports tab instead — update this field to match if you want the two to agree.",
         ],
       },
       {
@@ -346,7 +348,9 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         href: "/admin/content/projects",
         permission: "content.view",
         summary: "The public-facing description, photos and highlights for each project — separate from the internal Project record under Development.",
-        details: [],
+        details: [
+          "Total/Available Units and Total/Available Car/Bike Parking are typed in by hand here — they drive the availability summary on the project's public page, but aren't pulled automatically from the real Units/Parking records under Development, so update them yourself as units or spaces sell.",
+        ],
       },
       {
         label: "Properties",
@@ -453,6 +457,7 @@ export const ADMIN_GUIDE: GuideGroup[] = [
           "Address/Phone/WhatsApp Number/Email/Website/Hours feed the public footer's \"Contact\" column directly — each one only appears there once you fill it in, nothing is ever shown as a placeholder. Phone, WhatsApp and Email are tap/click-to-contact links; WhatsApp specifically needs the country code with no spaces or symbols (e.g. 8801XXXXXXXXX) since it becomes a wa.me chat link.",
           "The Social Media URL fields (Instagram, Facebook, TikTok, X, Threads, Pinterest, YouTube, LinkedIn) each show an icon in the public footer's \"Follow\" column, but only for the platforms you actually fill in — leave one blank and its icon simply doesn't appear.",
           "The \"Public 'Our Impact' Stats\" section (Ongoing Developments, Development Area, Locations, Landowner Partnerships) feeds the stat row on the public About page directly — leave a field blank to show an honest \"—\" placeholder there instead of a fabricated zero.",
+          "The Security section's \"Require PIN for Property Owner login\" switch is on by default — turn it off only if you've decided a Property Owner can be signed in with just their registered phone number, no PIN, because some owners find a PIN confusing. Off means anyone who knows an owner's phone number can see that owner's own portal data too, so treat it as a deliberate tradeoff, not a convenience default. Flip it back on any time — nothing is deleted, PIN checking just resumes. This never touches Staff/Admin login, which always requires a password.",
           "Also links to your personal Notification Preferences — control which alert categories and channels reach you.",
         ],
       },
