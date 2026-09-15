@@ -55,4 +55,15 @@ export interface CompanySettings extends AuditFields {
   impactDevelopmentAreaAcres?: number;
   impactLocations?: number;
   impactLandownerPartnerships?: number;
+  /**
+   * Defaults to required (`true`) when unset — an explicit admin choice to
+   * turn this off, not an accidental one. When `false`, a Property Owner
+   * who enters a registered phone number is signed straight in with no PIN
+   * check, even if they've already set one. A deliberate tradeoff the
+   * business owner made after being warned it means anyone who knows an
+   * owner's phone number can see that owner's portal data — never apply
+   * this same relaxation to Staff/Admin login, which stays password-only
+   * regardless of this setting.
+   */
+  requireOwnerPin?: boolean;
 }

@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/ui/Button";
 import type { CompanySettings } from "@/types/settings";
 import type { SettingsFormState } from "@/features/settings/actions";
@@ -147,6 +148,14 @@ export function SettingsForm({ action, settings }: SettingsFormProps) {
         <Input label="Locations" name="impactLocations" type="number" defaultValue={settings.impactLocations} />
         <Input label="Landowner Partnerships" name="impactLandownerPartnerships" type="number" defaultValue={settings.impactLandownerPartnerships} />
       </div>
+
+      <h2 className="text-label text-fg-subtle mt-2 uppercase">Security</h2>
+      <Switch
+        name="requireOwnerPin"
+        label="Require PIN for Property Owner login"
+        description="On (default): owners must enter their 4-digit PIN, same as today. Off: entering a registered phone number alone signs an owner straight in, no PIN asked — easier for owners who find a PIN confusing, but anyone who knows an owner's phone number can then see that owner's portal data too. Staff/Admin login always requires a password regardless of this setting."
+        defaultChecked={settings.requireOwnerPin ?? true}
+      />
 
       <div className="flex items-center gap-3">
         <SubmitButton />

@@ -53,6 +53,7 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
   const impactDevelopmentAreaAcresRaw = String(formData.get("impactDevelopmentAreaAcres") ?? "").trim();
   const impactLocationsRaw = String(formData.get("impactLocations") ?? "").trim();
   const impactLandownerPartnershipsRaw = String(formData.get("impactLandownerPartnerships") ?? "").trim();
+  const requireOwnerPin = formData.get("requireOwnerPin") === "on";
 
   if (!legalName || legalName.length < 2) return { error: "Enter a legal name." };
   if (!displayName || displayName.length < 2) return { error: "Enter a display name." };
@@ -109,6 +110,7 @@ export async function updateCompanySettings(_prevState: SettingsFormState, formD
     impactDevelopmentAreaAcres: Number.isFinite(impactDevelopmentAreaAcres) ? impactDevelopmentAreaAcres : undefined,
     impactLocations: Number.isFinite(impactLocations) ? impactLocations : undefined,
     impactLandownerPartnerships: Number.isFinite(impactLandownerPartnerships) ? impactLandownerPartnerships : undefined,
+    requireOwnerPin,
     updatedBy: user.id,
     updatedAt: new Date().toISOString(),
   });

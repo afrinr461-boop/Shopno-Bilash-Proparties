@@ -8,6 +8,7 @@ import { createSessionToken, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from 
 import { findOwnerCredentialsByPhone, createOwnerCredential, updateOwnerCredentialPin, normalizePhone } from "@/lib/auth/ownerCredentials";
 import { findUserByPhone, userRepository } from "@/features/users/repository";
 import { recordAuditEvent } from "@/features/audit/repository";
+import { companySettingsRepository, COMPANY_SETTINGS_ID } from "@/features/settings/repository";
 import { PORTAL_ROLES, getPortalHomePath } from "@/config/roles";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -36,7 +37,17 @@ function isValidPin(pin: string): boolean {
   return /^\d{4}$/.test(pin);
 }
 
-/** Step 1 — identifies which flow to show next (returning login vs. first-time activation) without ever revealing account details before the owner proves they hold the PIN. */
+/**
+ * Step 1 — identifies which flow to show next (returning login vs.
+ * first-time activation) without ever revealing account details before the
+ * owner proves they hold the PIN. Unless `CompanySettings.requireOwnerPin`
+ * is explicitly turned off — an admin-chosen tradeoff (see that field's own
+ * comment): in that mode, a registered phone number alone is enough and
+ * this signs the owner straight in here, skipping the PIN step entirely.
+ * That relaxation is scoped to this one function/flow only — Staff/Admin
+ * login (`lib/auth/actions.ts`) never reads this setting and always
+ * requires a password.
+ */
 export async function identifyOwnerAction(_prevState: OwnerAuthState, formData: FormData): Promise<OwnerAuthState> {
   const phone = String(formData.get("phone") ?? "").trim();
 
@@ -44,20 +55,43 @@ export async function identifyOwnerAction(_prevState: OwnerAuthState, formData: 
     return { step: "phone", error: "Enter a valid phone number." };
   }
 
+  const rateLimitKey = normalizePhone(phone);
+
   // Throttles phone-number enumeration (this step reveals, via its two
   // different responses, whether a given number has a registered portal
   // account) — same limiter/key convention as the PIN step.
-  if (await isRateLimited(normalizePhone(phone))) {
+  if (await isRateLimited(rateLimitKey)) {
     return { step: "phone", error: "Too many attempts. Please try again in a few minutes." };
   }
 
   const user = await findUserByPhone(phone, PORTAL_ROLES);
   if (!user) {
-    await recordFailedAttempt(normalizePhone(phone));
+    await recordFailedAttempt(rateLimitKey);
     return { step: "phone", error: NOT_FOUND_MESSAGE };
   }
   if (user.status === "suspended" || user.status === "disabled") {
     return { step: "phone", error: INACTIVE_MESSAGE };
+  }
+
+  const settings = await companySettingsRepository.findById(COMPANY_SETTINGS_ID);
+  if (settings?.requireOwnerPin === false) {
+    await clearAttempts(rateLimitKey);
+
+    const token = await createSessionToken({ userId: user.id, role: user.role });
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
+
+    await userRepository.update(user.id, { lastLoginAt: new Date().toISOString() });
+
+    await recordAuditEvent({
+      actorUserId: user.id,
+      action: "auth.login",
+      entityType: "User",
+      entityId: user.id,
+      ipAddress: await getClientIp(),
+    });
+
+    redirect(getPortalHomePath(user.role));
   }
 
   const existing = await findOwnerCredentialsByPhone(phone);
