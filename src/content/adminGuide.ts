@@ -30,13 +30,24 @@ export const ADMIN_GUIDE: GuideGroup[] = [
       {
         label: "Dashboard",
         href: "/admin",
-        summary: "The company-wide command center — every number here is computed live from real records, nothing is fixed or fabricated.",
+        summary: "The company-wide command center — every number here is computed live from real records (units, sales, payments, expenses…) every time you load the page, never a fixed report or a typed-in figure.",
         details: [
           "\"Urgent\" and \"Today\" at the top show your most time-sensitive Alerts and Reminders — click through to act on them immediately.",
-          "Company Overview, Financial Overview, Construction, Sales, Inventory, Documents and Alerts sections summarize every module at once.",
           "Every KPI card is clickable — it takes you straight to the underlying list or report (e.g. click \"Outstanding\" to see exactly which owners owe money).",
           "Recent Activity shows the latest real actions across the whole system; Quick Actions gives one-click shortcuts to the most common tasks.",
           "A small red dot on a sidebar item (Projects, Sales, Settings, etc.) means that section is still empty or missing key info — it disappears the moment you add something there, so it's a running checklist of what's left to set up, not an alert about a problem.",
+
+          "COMPANY OVERVIEW — Total Projects: every project you can see, with the subtext splitting it into Active (status Ongoing or Ready) and Completed. Total Units: every unit across those projects, split into Assigned (has an owner) and Available. Total Owners: the number of distinct people/entities (customers, shareholders, landowners combined) who currently own something — an owner counted once even if they hold several units. Parking: total parking spaces, with how many are currently Assigned (anything not left as \"Available\").",
+
+          "FINANCIAL OVERVIEW — Expected Collections: the total amount owners are expected to pay in total across every cost-allocation goal set up for their projects (adjustments/waivers already included). Collected: how much of that has actually been paid. Outstanding: Expected minus Collected — every contribution not yet fully paid, whether or not it's overdue yet. Overdue Amount: the stricter subset of Outstanding that's specifically past its due date — this is why Overdue is always ≤ Outstanding, never more. Project Expenses / Material Cost / Contractor Cost: real money spent, summed only from Expenses/Purchases/Contractor Payments marked verified or completed (a pending or rejected one never inflates these). Budget vs Actual compares the total planned Budget against this same real Actual figure — not the hand-typed \"Actual (Manual)\" field you may see on an individual Project Finance budget line, which can drift from this real number if it's never updated to match.",
+
+          "CONSTRUCTION — counts only Ongoing-status projects and their phases/tasks/milestones. Average Progress is the mean of every project's own overall progress. Delayed Phases/Overdue Tasks are anything past its target date that isn't marked completed or cancelled yet. Upcoming Milestones are those due within the next 30 days.",
+
+          "SALES — Leads and Active Bookings/Pending Sales come from the same live pipeline the Sales Dashboard shows in more detail. Completed Sales counts finalized (non-cancelled) transactions; Sales Value is their total price.",
+
+          "INVENTORY — Low/Out-of-Stock Materials compare current stock against each material's threshold (or the company-wide default in Settings if it has none of its own). Recent Purchases/Usage are activity in just the last 7 days.",
+
+          "DOCUMENTS & ALERTS — Expiring Soon/Expired are driven by each document's own expiry date; the four Alert severities (Critical/High/Medium/Low) are the same alerts feeding \"Urgent\" at the top, just totalled by how serious they are.",
         ],
       },
     ],
@@ -111,8 +122,11 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         permission: "sales.view",
         summary: "A sales-team-focused view: pipeline, follow-ups, bookings and conversion — separate from the main company dashboard.",
         details: [
-          "Shows today's/overdue/upcoming lead follow-ups so nobody falls through the cracks.",
-          "Active Bookings, Pending Sales and Conversion Rate give a real-time read on how the sales funnel is performing.",
+          "Today's/Overdue/Upcoming Follow-ups: leads with a scheduled next-contact date, split by whether that date is today, already passed, or within the next 7 days — a lead marked Won or Lost never appears here.",
+          "Active Leads: every lead not yet closed as Won or Lost. Site Visits: leads currently at the \"Site Visit\" pipeline stage specifically.",
+          "Active Bookings: bookings in the Reserved/Booked/Confirmed state — a Cancelled or Converted booking doesn't count. Available/Sold Units count real Unit records by their current status.",
+          "Pending Sales: sales still Pending or Confirmed (not yet Completed or Cancelled). Total Sales Value sums every sale's price except cancelled ones.",
+          "Conversion Rate = Won leads ÷ (Won + Lost leads), as a percentage — a lead still open in the pipeline doesn't affect this number either way; it shows \"—\" until at least one lead has actually closed.",
         ],
       },
       {
@@ -423,8 +437,11 @@ export const ADMIN_GUIDE: GuideGroup[] = [
         label: "Reports",
         href: "/admin/finance/reports",
         permission: "reports.view",
-        summary: "The main financial/operational report hub — Owner Contributions, Category Report, Contractor Payments, Monthly Cash Flow.",
-        details: ["Every report drills down to the individual transactions behind the total — a number is never a dead end."],
+        summary: "The main financial/operational report hub — a top-level summary page, plus drill-down reports for Owner Contributions, Category, Contractor Payments and Monthly Cash Flow.",
+        details: [
+          "Every report drills down to the individual transactions behind the total — a number is never a dead end.",
+          "The summary page's Sales/Finance cards (Payments Received, Expenses, Outstanding, Contractor Payments) and Construction Cost cards (Material Cost, Total Budget, Actual Construction Cost, Budget Variance) are computed the same way as the main Dashboard's Financial Overview — expenses/contractor payments only count once verified or completed, cancelled sales are excluded. Actual Construction Cost is Material + Expenses + Contractor Cost combined; Budget Variance is that figure minus Total Budget (red/over when actual has overtaken budget).",
+        ],
       },
       {
         label: "Sales Reports",
